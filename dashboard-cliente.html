@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SugarFood - Tu Menú en Azca</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilo ultra-limpio solo para esta portada */
+        body, html { height: 100%; margin: 0; overflow: hidden; }
+        .hero-fullscreen {
+            height: 100vh;
+            background: linear-gradient(rgba(15, 15, 15, 0.6), rgba(15, 15, 15, 0.8)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+        }
+        .hero-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-fullscreen">
+        <header style="background: transparent; border: none; box-shadow: none;">
+            <div class="container navbar">
+                <div class="logo" style="color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">SugarFood <i class="fas fa-utensils" style="font-size: 1.2rem; color: var(--brand-color);"></i></div>
+                <nav class="nav-links">
+                    <button class="btn btn-outline-light" id="headerLoginBtn">Iniciar Sesión</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="hero-center">
+            <h1 style="color: var(--brand-color); font-size: 5rem; margin-bottom: 10px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8);">SugarFood</h1>
+            <p style="color: #fff; font-size: 1.6rem; margin-bottom: 50px; font-weight: 300; letter-spacing: 2px; text-shadow: 1px 1px 5px rgba(0,0,0,0.8);">Alta gastronomía local, sin esperas.</p>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-brand" id="heroSignupBtn" style="padding: 16px 45px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">Comenzar</button>
+                <a href="info.html" class="btn btn-glass">Descubre el Proyecto</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.4); font-size: 0.85rem; letter-spacing: 1px;">
+            &copy; 2026 SugarFood Azca - AI & Machine Learning Project
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content luxury-modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            
+            <div class="modal-header">
+                <h2 style="color: #fff; font-family: var(--font-heading); margin-bottom: 5px;">Bienvenido</h2>
+                <p style="color: #888; font-size: 0.9rem;">Accede a tu plataforma gastronómica</p>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="loginTab">Iniciar Sesión</button>
+                <button class="tab-btn" id="signupTab">Registrarse</button>
+            </div>
+
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group input-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
+                </div>
+                <div class="form-group input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                </div>
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <a href="#" style="color: var(--brand-color); font-size: 0.85rem; text-decoration: none;">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="btn btn-brand" style="width: 100%; padding: 15px;">Entrar</button>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+                <div class="form-group input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupName" placeholder="Nombre completo o Local" required>
+                </div>
+                <div class="form-group input-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="Correo electrónico" required>
+                </div>
+                <div class="form-group input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Contraseña" required>
+                </div>
+                <div class="form-group">
+                    <label style="color: #888; font-size: 0.85rem; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 1px;">Tipo de Cuenta</label>
+                    <select id="signupRole" required class="luxury-select">
+                        <option value="Cliente">Comensal (Busco menú)</option>
+                        <option value="Restaurante">Restaurante (Subo menú)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-brand" style="width: 100%; padding: 15px; margin-top: 10px;">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

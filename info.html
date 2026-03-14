@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SugarFood - El Proyecto</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-main">
+
+    <header>
+        <div class="container navbar">
+            <div class="logo">SugarFood</div>
+            <nav class="nav-links">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="container" style="padding: 60px 20px; max-width: 1000px;">
+            <div class="carousel" id="infoCarousel">
+                <div class="carousel-track">
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1800&q=80" alt="Restaurante con gente comiendo">
+                        <div class="carousel-caption">
+                            <strong>Menús al instante</strong> para saber qué ofrecen los restaurantes antes de salir.
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1555992336-03a23c5759b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1800&q=80" alt="Persona usando la app para elegir comida">
+                        <div class="carousel-caption">
+                            <strong>Filtra por plato, precio o disponibilidad</strong> y toma decisiones rápidas desde el móvil.
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1517142089942-ba376ce32a4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1800&q=80" alt="Análisis de datos en pantalla">
+                        <div class="carousel-caption">
+                            <strong>Menús estructurados</strong> para que el personal y los clientes vean lo disponible sin errores.
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-controls" aria-label="Controles de carrusel"></div>
+            </div>
+
+            <div class="image-grid">
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1498654896293-37aacf113fd9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Persona consultando menú en el móvil">
+                    <p>Consulta rápida del menú desde el móvil, sin llamadas ni esperas.</p>
+                </div>
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Foto de comida tomada con el móvil">
+                    <p>Captura el menú con tu teléfono y súbelo en segundos.</p>
+                </div>
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1555992336-03a23c5759b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Cliente eligiendo opciones desde la app">
+                    <p>Elige según tus prioridades: precio, tiempo o tus platos favoritos.</p>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>Cómo lo usa el cliente</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-stopwatch" style="color: var(--brand-color); margin-right: 10px;"></i> Encuentra rápido</h3>
+                        <p>Consulta menús actuales sin pedir información por teléfono ni desplazarte para comprobar disponibilidad.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-filter" style="color: var(--brand-color); margin-right: 10px;"></i> Filtra por lo que necesitas</h3>
+                        <p>Ordena por precio, tipo de plato o tiempo de espera para elegir con confianza en tu hora de comida.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-route" style="color: var(--brand-color); margin-right: 10px;"></i> Planifica tu ruta</h3>
+                        <p>Elige restaurantes cercanos con menú actualizado; así reduces tiempo de traslado y maximizas tu pausa.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>Cómo lo usa el restaurante</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-upload" style="color: var(--brand-color); margin-right: 10px;"></i> Publica tu menú en segundos</h3>
+                        <p>Sube una foto del menú y el sistema extrae los platos y precios automáticamente, sin que tengas que redactar nada.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-chart-bar" style="color: var(--brand-color); margin-right: 10px;"></i> Más visibilidad</h3>
+                        <p>Los clientes ven tu oferta en tiempo real, lo que reduce preguntas y llamadas para confirmar el menú.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-leaf" style="color: var(--brand-color); margin-right: 10px;"></i> Menos desperdicio</h3>
+                        <p>Al saber qué platos son los más buscados, puedes ajustar producción y evitar sobrantes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>¿Cómo funciona? (paso a paso)</h2>
+                <p>El restaurante toma una foto del menú y la sube a la plataforma. En cuestión de segundos, los platos, precios y tipos quedan disponibles para todos los usuarios.</p>
+                <p>El cliente puede filtrar por plato, tipo de comida, precio y tiempo de servicio para seleccionar dónde ir sin perder tiempo.</p>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-camera" style="color: var(--brand-color); margin-right: 10px;"></i> Foto del menú</h3>
+                        <p>Captura la carta desde el móvil y nuestro motor la entiende al instante.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-robot" style="color: var(--brand-color); margin-right: 10px;"></i> Extracción IA</h3>
+                        <p>Clasificamos ingredientes, precios y platos para mostrarlos en una interfaz clara.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="fas fa-mobile-alt" style="color: var(--brand-color); margin-right: 10px;"></i> Filtrado instantáneo</h3>
+                        <p>Busca por plato, horario o precio y encuentra tu mejor opción sin perder tiempo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2><i class="fas fa-brain"></i> ¿Qué viene?: mejoras prácticas</h2>
+                <p>En próximas versiones añadiremos opciones para que restaurantes y clientes aprovechen aún más los datos que genera el uso diario.</p>
+                <ul style="padding-left: 20px; margin-top: 10px;">
+                    <li><strong>Reportes sencillos</strong>: saber qué platos son los más buscados y cuándo hay más tráfico.</li>
+                    <li><strong>Recomendaciones básicas</strong>: sugerencias de menús basadas en preferencias y horarios más demandados.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="corporate-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h3 style="color: var(--brand-color); font-size: 1.5rem; margin-bottom: 15px;">SugarFood</h3>
+                <p>Optimizando la pausa de la comida. Menos colas, mejor comida, datos inteligentes.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Aviso Legal</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Términos y Condiciones</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SugarFood Technologies. Proyecto Universitario.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Carousel simple: avanza cada 4s y permite selección mediante puntos.
+        (function() {
+            const track = document.querySelector('#infoCarousel .carousel-track');
+            const slides = Array.from(track.children);
+            const controls = document.querySelector('#infoCarousel .carousel-controls');
+            let currentIndex = 0;
+
+            const createDot = (index) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+                dot.addEventListener('click', () => goToSlide(index));
+                return dot;
+            };
+
+            const updateDots = () => {
+                controls.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentIndex);
+                });
+            };
+
+            const goToSlide = (index) => {
+                currentIndex = index;
+                const offset = -index * track.clientWidth;
+                track.style.transform = `translateX(${offset}px)`;
+                updateDots();
+            };
+
+            const nextSlide = () => goToSlide((currentIndex + 1) % slides.length);
+
+            // Crear puntos de control
+            slides.forEach((_, idx) => controls.appendChild(createDot(idx)));
+
+            let autoplay = setInterval(nextSlide, 4200);
+            // Pausar al interactuar
+            controls.addEventListener('mouseenter', () => clearInterval(autoplay));
+            controls.addEventListener('mouseleave', () => { autoplay = setInterval(nextSlide, 4200); });
+
+            window.addEventListener('resize', () => goToSlide(currentIndex));
+        })();
+    </script>
+
+</body>
+</html>
