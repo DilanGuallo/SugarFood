@@ -2,9 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SugarFood - Buscar Menús</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Restaurante - AZCA</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos específicos rápidos para la vista de detalle */
+        .hero-restaurant {
+            height: 40vh;
+            background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .hero-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 40px 20px;
+            color: white;
+        }
+        .menu-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: -30px;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body class="bg-gray">
 
@@ -12,42 +39,45 @@
         <div class="container navbar">
             <div class="logo">SugarFood</div>
             <nav class="nav-links">
-                <span>Hola, <strong>Empleado</strong></span>
-                <a href="index.html" style="color: #666; text-decoration: none;">Salir</a>
+                <a href="dashboard-cliente.html"><i class="fas fa-arrow-left"></i> Volver</a>
             </nav>
         </div>
     </header>
 
-    <main class="container" style="padding: 40px 20px;">
-        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px;">
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #888;"></i>
-                    <input type="text" placeholder="¿Qué te apetece hoy? (Ej: Salmorejo, Entrecot...)" style="width: 100%; padding: 10px 10px 10px 40px; border: 1px solid #ccc; border-radius: 8px;">
-                </div>
-                <select style="padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
-                    <option>Cualquier precio</option>
-                    <option>Menos de 12€</option>
-                    <option>12€ - 15€</option>
-                </select>
-                <button class="btn" style="background-color: #e63946; color: white;">Buscar Platos</button>
-            </div>
+    <div class="hero-restaurant">
+        <div class="hero-overlay container">
+            <h1 style="font-size: 3rem; margin-bottom: 10px;">La Taberna de Azca</h1>
+            <p style="font-size: 1.2rem;"><i class="fas fa-map-marker-alt"></i> Paseo de la Castellana 89, Madrid | <i class="fas fa-star" style="color:#f4c150;"></i> 4.8 (120 valoraciones)</p>
         </div>
+    </div>
 
-        <h2 style="margin-bottom: 20px; color: #333;">Restaurantes con tus platos favoritos hoy</h2>
-        
-        <div class="restaurant-grid">
-            <a href="restaurante.html" class="restaurant-card">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4');"></div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <h3>La Taberna de Azca</h3>
-                        <div class="rating"><span>4.8</span> <i class="fas fa-star" style="color: gold;"></i></div>
-                    </div>
-                    <p class="description" style="color: #e63946; font-weight: bold;">¡Tienen Salmorejo hoy!</p>
-                    <p class="description">Menú del día: 13.50€</p>
+    <main class="container" style="padding-bottom: 50px;">
+        <div class="menu-section">
+            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">Menú del Día - <span style="color: #666; font-size: 1.2rem;">15.50€</span></h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div>
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Primeros</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Salmorejo cordobés con crujiente de jamón</li>
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Ensalada de queso de cabra y nueces</li>
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Risotto de setas trufado</li>
+                    </ul>
                 </div>
-            </a>
+
+                <div>
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px;">Segundos</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Entrecot a la parrilla con patatas</li>
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Lomo de salmón al horno</li>
+                        <li><i class="fas fa-utensils" style="color: #ccc; margin-right: 10px;"></i> Secreto ibérico con pimientos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                <p><strong>Incluye:</strong> Pan, bebida, postre o café.</p>
+            </div>
         </div>
     </main>
 

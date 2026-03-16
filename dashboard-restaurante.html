@@ -10,7 +10,7 @@
 
     <header>
         <div class="container navbar">
-            <div class="logo" style="color: #e63946;">SugarFood <span style="font-size: 0.8rem; color: #666;">Para Restaurantes</span></div>
+            <div class="logo">SugarFood <span style="font-size: 0.8rem; color: #666;">Para Restaurantes</span></div>
             <nav class="nav-links">
                 <span>Hola, <strong>La Taberna</strong></span>
                 <a href="index.html" style="color: #666; text-decoration: none;">Salir</a>
@@ -53,6 +53,69 @@
 
         </div>
     </main>
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content luxury-modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h2>Bienvenido a SugarFood</h2>
+                <p class="modal-subtitle">Inicia sesión o crea tu cuenta para acceder al menú.</p>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="loginTab">Entrar</button>
+                <button class="tab-btn" id="signupTab">Registro</button>
+            </div>
+
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="loginPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signupName">Nombre</label>
+                    <div class="input-icon">
+                        <input type="text" id="signupName" placeholder="Tu nombre" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="signupEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="signupPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupRole">Soy un...</label>
+                    <select id="signupRole" class="luxury-select" required>
+                        <option value="Cliente">Cliente (Busco comida)</option>
+                        <option value="Restaurante">Restaurante (Subo menús)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
     <footer class="app-footer">
         <div class="container app-footer-content">
             <p>&copy; 2026 SugarFood</p>
@@ -64,5 +127,6 @@
         </div>
     </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
