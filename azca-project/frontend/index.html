@@ -2,54 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SugarFood - Buscar Menús</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SugarFood - Tu Menú en Azca</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilo ultra-limpio solo para esta portada */
+        body, html { height: 100%; margin: 0; overflow: hidden; }
+        .hero-fullscreen {
+            height: 100vh;
+            background: linear-gradient(rgba(26, 26, 26, 0.4), rgba(26, 26, 26, 0.8)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+        }
+        .hero-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+    </style>
 </head>
-<body class="bg-gray">
+<body>
 
-    <header>
-        <div class="container navbar">
-            <div class="logo">SugarFood</div>
-            <nav class="nav-links">
-                <span>Hola, <strong>Empleado</strong></span>
-                <a href="index.html" style="color: #666; text-decoration: none;">Salir</a>
-            </nav>
-        </div>
-    </header>
+    <div class="hero-fullscreen">
+        <header style="background: transparent; border: none; box-shadow: none;">
+            <div class="container navbar">
+                <div class="logo" style="color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">SugarFood</div>
+                <nav class="nav-links">
+                    <button class="btn" style="background: transparent; color: white; border: 1px solid white;" id="headerLoginBtn">Iniciar Sesión</button>
+                </nav>
+            </div>
+        </header>
 
-    <main class="container" style="padding: 40px 20px;">
-        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px;">
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #888;"></i>
-                    <input type="text" placeholder="¿Qué te apetece hoy? (Ej: Salmorejo, Entrecot...)" style="width: 100%; padding: 10px 10px 10px 40px; border: 1px solid #ccc; border-radius: 8px;">
-                </div>
-                <select style="padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
-                    <option>Cualquier precio</option>
-                    <option>Menos de 12€</option>
-                    <option>12€ - 15€</option>
-                </select>
-                <button class="btn" style="background-color: #e63946; color: white;">Buscar Platos</button>
+        <div class="hero-center">
+            <h1 style="color: var(--brand-color); font-size: 4.5rem; margin-bottom: 10px; text-shadow: 2px 2px 8px rgba(0,0,0,0.6);">SugarFood</h1>
+            <p style="color: #fff; font-size: 1.5rem; margin-bottom: 40px; font-weight: 300; letter-spacing: 1px;">Alta gastronomía local, sin esperas.</p>
+            
+            <div style="display: flex; gap: 20px;">
+                <button class="btn btn-brand" id="heroSignupBtn" style="padding: 16px 40px; font-size: 1.1rem;">Comenzar</button>
+                <a href="info.html" class="btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 16px 40px; font-size: 1.1rem; backdrop-filter: blur(5px);">Descubre el Proyecto</a>
             </div>
         </div>
 
-        <h2 style="margin-bottom: 20px; color: #333;">Restaurantes con tus platos favoritos hoy</h2>
-        
-        <div class="restaurant-grid">
-            <a href="restaurante.html" class="restaurant-card">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4');"></div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <h3>La Taberna de Azca</h3>
-                        <div class="rating"><span>4.8</span> <i class="fas fa-star" style="color: gold;"></i></div>
-                    </div>
-                    <p class="description" style="color: #e63946; font-weight: bold;">¡Tienen Salmorejo hoy!</p>
-                    <p class="description">Menú del día: 13.50€</p>
-                </div>
-            </a>
+        <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.5); font-size: 0.85rem;">
+            &copy; 2026 SugarFood Azca - Proyecto de Machine Learning
         </div>
-    </main>
+    </div>
 
     <div class="modal-overlay" id="authModal">
         <div class="modal-content luxury-modal">
@@ -104,6 +106,13 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="signupPhone">Teléfono (opcional)</label>
+                    <div class="input-icon">
+                        <input type="tel" id="signupPhone" placeholder="+34 600 000 000">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="signupRole">Soy un...</label>
                     <select id="signupRole" class="luxury-select" required>
                         <option value="Cliente">Cliente (Busco comida)</option>
@@ -115,6 +124,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api_client.js"></script>
 </body>
 </html>

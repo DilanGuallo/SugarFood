@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Restaurante - SugarFood</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para la página de restaurante */
+        .hero-restaurant {
+            height: 50vh;
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .hero-overlay {
+            padding: 40px 20px;
+            color: white;
+            width: 100%;
+        }
+
+        .restaurant-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .restaurant-details h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .restaurant-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .rating i {
+            color: #ffd700;
+        }
+
+        .price-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .menu-section {
+            background: white;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .menu-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .menu-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .menu-content {
+            padding: 40px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 40px;
+        }
+
+        .menu-category {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .menu-category h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-category h3 i {
+            color: #667eea;
+        }
+
+        .dish-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dish-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .dish-item:last-child {
+            border-bottom: none;
+        }
+
+        .dish-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .dish-info h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .dish-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .includes-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .includes-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .includes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .include-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .include-item i {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .include-item p {
+            margin: 0;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .hero-restaurant {
+                height: 40vh;
+            }
+
+            .restaurant-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .restaurant-details h1 {
+                font-size: 2rem;
+            }
+
+            .restaurant-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .includes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="bg-main">
+
+    <button class="back-button" onclick="window.location.href='dashboard-cliente.html'">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="hero-restaurant">
+        <div class="hero-overlay container">
+            <div class="restaurant-info">
+                <div class="restaurant-details">
+                    <h1 id="restaurantName">La Taberna de Azca</h1>
+                    <div class="restaurant-meta">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="restaurantLocation">Paseo de la Castellana 89, Madrid</span>
+                        </div>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span id="restaurantRating">4.8</span>
+                            <span style="opacity: 0.8;">(120 valoraciones)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="price-tag" id="menuPrice">15.50€</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <div class="menu-header">
+            <h2>Menú del Día</h2>
+            <p>Disfruta de nuestra selección fresca del día</p>
+        </div>
+
+        <div class="menu-content container">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>
+                        <i class="fas fa-leaf"></i>
+                        Primeros Platos
+                    </h3>
+                    <ul class="dish-list" id="primerosList">
+                        <li class="dish-item">
+                            <div class="dish-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="dish-info">
+                                <h4>Salmorejo cordobés</h4>
+                                <p>Con crujiente de jamón ibérico</p>
+                            </div>
+                        </li>
+                        <li class="dish-item">
+                            <div class="dish-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="dish-info">
+                                <h4>Ensalada de queso de cabra</h4>
+                                <p>Con nueces caramelizadas y miel</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-category">
+                    <h3>
+                        <i class="fas fa-drumstick-bite"></i>
+                        Segundos Platos
+                    </h3>
+                    <ul class="dish-list" id="segundosList">
+                        <li class="dish-item">
+                            <div class="dish-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="dish-info">
+                                <h4>Entrecot a la parrilla</h4>
+                                <p>Con patatas rústicas y verduras</p>
+                            </div>
+                        </li>
+                        <li class="dish-item">
+                            <div class="dish-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="dish-info">
+                                <h4>Lomo de salmón al horno</h4>
+                                <p>Con salsa de eneldo y limón</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="includes-section">
+                <h3>El menú incluye</h3>
+                <div class="includes-grid" id="includesList">
+                    <div class="include-item">
+                        <i class="fas fa-bread-slice"></i>
+                        <p>Pan</p>
+                    </div>
+                    <div class="include-item">
+                        <i class="fas fa-glass-whiskey"></i>
+                        <p>Bebida</p>
+                    </div>
+                    <div class="include-item">
+                        <i class="fas fa-birthday-cake"></i>
+                        <p>Postre</p>
+                    </div>
+                    <div class="include-item">
+                        <i class="fas fa-coffee"></i>
+                        <p>Café</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="orderMenu()">
+                    <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
+                    Pedir Menú
+                </button>
+                <button class="btn-secondary" onclick="callRestaurant()">
+                    <i class="fas fa-phone" style="margin-right: 8px;"></i>
+                    Llamar al Restaurante
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content luxury-modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h2>Bienvenido a SugarFood</h2>
+                <p class="modal-subtitle">Inicia sesión o crea tu cuenta para acceder al menú.</p>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="loginTab">Entrar</button>
+                <button class="tab-btn" id="signupTab">Registro</button>
+            </div>
+
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="loginPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signupName">Nombre</label>
+                    <div class="input-icon">
+                        <input type="text" id="signupName" placeholder="Tu nombre" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="signupEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="signupPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupRole">Soy un...</label>
+                    <select id="signupRole" class="luxury-select" required>
+                        <option value="Cliente">Cliente (Busco comida)</option>
+                        <option value="Restaurante">Restaurante (Subo menús)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api_client.js"></script>
+    <script>
+        // Página de detalle de restaurante/menú
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verificar autenticación
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Obtener ID del menú de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const menuId = urlParams.get('id');
+
+            if (menuId) {
+                try {
+                    const response = await fetchMenus();
+                    if (response && response.menus) {
+                        const menu = response.menus.find(m => m.id == menuId);
+                        if (menu) {
+                            displayMenuDetails(menu);
+                        } else {
+                            alert('Menú no encontrado');
+                            window.location.href = 'dashboard-cliente.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error cargando menú:', error);
+                    alert('Error al cargar el menú');
+                }
+            } else {
+                // Mostrar menú de ejemplo si no hay ID
+                displaySampleMenu();
+            }
+        });
+
+        function displayMenuDetails(menu) {
+            // Actualizar título
+            const title = document.getElementById('restaurantName');
+            if (title) title.textContent = menu.bar_rest || 'Restaurante';
+
+            // Actualizar precio
+            const priceElement = document.getElementById('menuPrice');
+            if (priceElement) priceElement.textContent = menu.precio || 'Precio no disponible';
+
+            // Actualizar ubicación (simulada)
+            const locationElement = document.getElementById('restaurantLocation');
+            if (locationElement) locationElement.textContent = 'Paseo de la Castellana 89, Madrid';
+
+            // Actualizar valoración (simulada)
+            const ratingElement = document.getElementById('restaurantRating');
+            if (ratingElement) ratingElement.textContent = (4.5 + Math.random() * 0.5).toFixed(1);
+
+            // Actualizar primeros platos
+            const primerosList = document.getElementById('primerosList');
+            if (primerosList && menu.primeros) {
+                primerosList.innerHTML = menu.primeros.map(plato => `
+                    <li class="dish-item">
+                        <div class="dish-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="dish-info">
+                            <h4>${plato}</h4>
+                            <p>Primer plato tradicional</p>
+                        </div>
+                    </li>
+                `).join('');
+            }
+
+            // Actualizar segundos platos
+            const segundosList = document.getElementById('segundosList');
+            if (segundosList && menu.segundos) {
+                segundosList.innerHTML = menu.segundos.map(plato => `
+                    <li class="dish-item">
+                        <div class="dish-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="dish-info">
+                            <h4>${plato}</h4>
+                            <p>Segundo plato principal</p>
+                        </div>
+                    </li>
+                `).join('');
+            }
+
+            // Actualizar complementos
+            const includesList = document.getElementById('includesList');
+            if (includesList && menu.complemento) {
+                includesList.innerHTML = menu.complemento.map(item => `
+                    <div class="include-item">
+                        <i class="fas fa-${getIconForItem(item)}"></i>
+                        <p>${item}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Agregar postres si existen
+            if (menu.postre && menu.postre.length > 0) {
+                const postreItem = document.createElement('div');
+                postreItem.className = 'include-item';
+                postreItem.innerHTML = `
+                    <i class="fas fa-birthday-cake"></i>
+                    <p>${menu.postre.join(' o ')}</p>
+                `;
+                includesList.appendChild(postreItem);
+            }
+        }
+
+        function displaySampleMenu() {
+            const sampleMenu = {
+                bar_rest: "La Taberna de Azca",
+                precio: "13.50€",
+                primeros: ["Salmorejo cordobés con crujiente de jamón", "Ensalada de queso de cabra y nueces"],
+                segundos: ["Entrecot a la parrilla con patatas", "Lomo de salmón al horno"],
+                complemento: ["Pan", "Bebida"],
+                postre: ["Tarta de queso", "Fruta del tiempo"]
+            };
+
+            displayMenuDetails(sampleMenu);
+        }
+
+        function getIconForItem(item) {
+            const itemLower = item.toLowerCase();
+            if (itemLower.includes('pan')) return 'bread-slice';
+            if (itemLower.includes('bebida')) return 'glass-whiskey';
+            if (itemLower.includes('café')) return 'coffee';
+            return 'utensils';
+        }
+
+        function orderMenu() {
+            // Simular pedido
+            alert('¡Gracias por tu pedido! Te contactaremos pronto para confirmar los detalles.');
+        }
+
+        function callRestaurant() {
+            // Simular llamada
+            if (confirm('¿Quieres llamar al restaurante al +34 912 345 678?')) {
+                window.location.href = 'tel:+34912345678';
+            }
+        }
+
+        // Animación de entrada para las tarjetas
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Aplicar animación a las tarjetas de platos
+        setTimeout(() => {
+            document.querySelectorAll('.dish-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(item);
+            });
+
+            // Aplicar animación a las tarjetas de incluye
+            document.querySelectorAll('.include-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(item);
+            });
+        }, 100);
+    </script>
+</body>
+</html>

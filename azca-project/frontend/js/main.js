@@ -1,23 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // 1. MODAL DE ACCESO
     const authModal = document.getElementById('authModal');
     const headerLoginBtn = document.getElementById('headerLoginBtn');
-    const heroSignupBtn = document.getElementById('heroSignupBtn'); 
+    const heroSignupBtn = document.getElementById('heroSignupBtn');
     const closeModal = document.getElementById('closeModal');
-    
+
     const loginTab = document.getElementById('loginTab');
     const signupTab = document.getElementById('signupTab');
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
 
     const openModal = (tab = 'login') => {
-        if (!authModal) return; 
+        if (!authModal) return;
         authModal.style.display = 'flex';
         // Animación suave al abrir
         authModal.style.opacity = '0';
         setTimeout(() => { authModal.style.opacity = '1'; authModal.style.transition = 'opacity 0.3s ease'; }, 10);
-        
+
         if (tab === 'signup') activateSignup();
         else activateLogin();
     };
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (headerLoginBtn) headerLoginBtn.addEventListener('click', () => openModal('login'));
     if (heroSignupBtn) heroSignupBtn.addEventListener('click', () => openModal('signup'));
     if (closeModal) closeModal.addEventListener('click', closeModalFunc);
-    
+
     if (loginTab) loginTab.addEventListener('click', activateLogin);
     if (signupTab) signupTab.addEventListener('click', activateSignup);
 
@@ -56,22 +56,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. REDIRECCIÓN EN LA DEMO
+// 2. MANEJO DE FORMULARIOS DE AUTENTICACIÓN
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-            window.location.href = 'dashboard-cliente.html';
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const result = await loginUser({ email, password });
+            if (result) {
+                alert('¡Login exitoso!');
+                closeModalFunc();
+                // Redirigir según el rol
+                if (result.user.rol === 'Bar') {
+                    window.location.href = 'dashboard-restaurante.html';
+                } else {
+                    window.location.href = 'dashboard-cliente.html';
+                }
+            } else {
+                alert('Error en login. Verifica tus credenciales.');
+            }
         });
     }
 
     if (signupForm) {
-        signupForm.addEventListener('submit', (e) => {
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const rolSeleccionado = document.getElementById('signupRole').value;
-            if (rolSeleccionado === 'Cliente') {
-                window.location.href = 'dashboard-cliente.html';
-            } else if (rolSeleccionado === 'Restaurante') {
-                window.location.href = 'dashboard-restaurante.html';
+            const nombre_usuario = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const rol = document.getElementById('signupRole').value;
+            const telefono = document.getElementById('signupPhone') ? document.getElementById('signupPhone').value : '';
+
+            const result = await registerUser({ nombre_usuario, email, password, rol, telefono });
+            if (result) {
+                alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                activateLogin(); // Cambiar a la pestaña de login
+            } else {
+                alert('Error en registro. El email ya podría estar registrado.');
             }
         });
     }

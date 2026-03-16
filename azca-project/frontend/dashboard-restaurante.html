@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SugarFood - Panel de Restaurante</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para dashboard restaurante */
+        .hero-restaurant {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-restaurant h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .hero-restaurant p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #e8ecff;
+            border-color: #5a67d8;
+        }
+
+        .upload-area.dragover {
+            background: #e0e7ff;
+            border-color: #4c51bf;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stats-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .menu-preview {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .menu-header h3 {
+            color: #333;
+            margin: 0;
+        }
+
+        .menu-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .menu-items {
+            display: grid;
+            gap: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .item-info h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .item-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.1rem;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .tip-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .tip-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .tip-card p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-restaurant h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-main">
+
+    <header>
+        <div class="container navbar">
+            <div class="logo">
+                <i class="fas fa-utensils" style="color: var(--brand-color); margin-right: 10px;"></i>
+                SugarFood
+            </div>
+            <nav class="nav-links">
+                <span id="userGreeting">Cargando...</span>
+                <a href="#" id="logoutBtn" style="color: #666; text-decoration: none; margin-left: 20px;">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-restaurant">
+        <div class="container">
+            <h1>Panel de Restaurante</h1>
+            <p>Gestiona tus menús y conecta con nuevos clientes</p>
+        </div>
+    </section>
+
+    <main class="container">
+
+        <div class="dashboard-grid">
+            <div class="upload-section">
+                <h2 style="margin-bottom: 20px; color: #333; text-align: center;">
+                    <i class="fas fa-cloud-upload-alt" style="color: var(--brand-color); margin-right: 10px;"></i>
+                    Subir Menú del Día
+                </h2>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="upload-text">Arrastra tu foto del menú aquí</div>
+                    <div class="upload-subtext">o haz clic para seleccionar un archivo</div>
+                    <input type="file" class="file-input" id="menuFile" accept="image/*">
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="upload-btn" id="uploadBtn">
+                        <i class="fas fa-upload" style="margin-right: 8px;"></i>
+                        Procesar Menú con IA
+                    </button>
+                </div>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Procesando menú...</div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3 style="margin-bottom: 20px; color: #333; text-align: center;">Estadísticas del Día</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="viewsToday">0</div>
+                        <div class="stat-label">Vistas hoy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="ordersToday">0</div>
+                        <div class="stat-label">Pedidos hoy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="ratingToday">0.0</div>
+                        <div class="stat-label">Valoración</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="revenueToday">0€</div>
+                        <div class="stat-label">Ingresos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-preview">
+            <div class="menu-header">
+                <h3>Menú Actual</h3>
+                <span class="menu-status status-active" id="menuStatus">Activo</span>
+            </div>
+
+            <div class="menu-items" id="menuItems">
+                <!-- Los platos se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <div class="container">
+                <h2 style="margin-bottom: 30px; color: #333; text-align: center;">Consejos para Mejorar tus Ventas</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Fotos de Calidad</h4>
+                        <p>Las fotos atractivas de tus platos aumentan las ventas hasta un 30%. Asegúrate de que estén bien iluminadas y apetitosas.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h4>Precios Competitivos</h4>
+                        <p>Mantén tus precios entre 12-15€ para el menú del día. Los clientes buscan buena relación calidad-precio.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4>Actualiza Diariamente</h4>
+                        <p>Sube tu menú cada mañana antes de las 11:00. Los clientes buscan opciones frescas y variadas.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Variedad en el Menú</h4>
+                        <p>Ofrece opciones vegetarianas y tradicionales. La diversidad atrae a más clientes potenciales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content luxury-modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h2>Bienvenido a SugarFood</h2>
+                <p class="modal-subtitle">Inicia sesión o crea tu cuenta para acceder al menú.</p>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="loginTab">Entrar</button>
+                <button class="tab-btn" id="signupTab">Registro</button>
+            </div>
+
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="loginPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signupName">Nombre</label>
+                    <div class="input-icon">
+                        <input type="text" id="signupName" placeholder="Tu nombre" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <div class="input-icon">
+                        <input type="email" id="signupEmail" placeholder="tucorreo@ejemplo.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" id="signupPassword" placeholder="********" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupRole">Soy un...</label>
+                    <select id="signupRole" class="luxury-select" required>
+                        <option value="Cliente">Cliente (Busco comida)</option>
+                        <option value="Restaurante">Restaurante (Subo menús)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+    <footer class="app-footer">
+        <div class="container app-footer-content">
+            <p>&copy; 2026 SugarFood</p>
+            <div class="app-footer-links">
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXCgBwE%3D" target="_blank">Soporte</a>
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXCgBwE%3D" target="_blank">Privacidad</a>
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXCgBwE%3D" target="_blank">Términos</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/api_client.js"></script>
+    <script>
+        // Dashboard específico para restaurantes
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verificar autenticación
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Cargar información del usuario
+            const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            if (userInfo.nombre) {
+                document.getElementById('userGreeting').innerHTML = `Hola, <strong>${userInfo.nombre}</strong>`;
+            }
+
+            // Manejar logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+                window.location.href = 'index.html';
+            });
+
+            // Funcionalidad de drag & drop para subir imagen
+            const uploadArea = document.getElementById('uploadArea');
+            const menuFile = document.getElementById('menuFile');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            // Eventos de drag & drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+            uploadArea.addEventListener('click', () => menuFile.click());
+            menuFile.addEventListener('change', handleFileSelect);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight() {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                uploadArea.classList.remove('dragover');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            function handleFileSelect(e) {
+                const files = e.target.files;
+                handleFiles(files);
+            }
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        processMenuImage(file);
+                    } else {
+                        alert('Por favor, selecciona un archivo de imagen válido.');
+                    }
+                }
+            }
+
+            async function processMenuImage(file) {
+                // Mostrar progreso
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Procesando imagen...';
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'Procesando...';
+
+                // Simular progreso
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    progressFill.style.width = progress + '%';
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        progressText.textContent = '¡Procesamiento completado!';
+                        uploadBtn.disabled = false;
+                        uploadBtn.textContent = 'Procesar Menú con IA';
+
+                        // Aquí iría la lógica real de procesamiento de IA
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            showProcessedMenu();
+                        }, 1000);
+                    }
+                }, 200);
+            }
+
+            function showProcessedMenu() {
+                // Simular datos procesados por IA
+                const menuItems = document.getElementById('menuItems');
+                menuItems.innerHTML = `
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>Salmorejo cordobés</h4>
+                            <p>Primer plato - Tradicional cordobés</p>
+                        </div>
+                        <div class="item-price">Precio incluido</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>Entrecot a la parrilla</h4>
+                            <p>Segundo plato - Carne de primera calidad</p>
+                        </div>
+                        <div class="item-price">Precio incluido</div>
+                    </div>
+                `;
+
+                // Actualizar estadísticas de ejemplo
+                document.getElementById('viewsToday').textContent = '24';
+                document.getElementById('ordersToday').textContent = '3';
+                document.getElementById('ratingToday').textContent = '4.9';
+                document.getElementById('revenueToday').textContent = '40.50€';
+            }
+
+            // Cargar menú existente si hay
+            loadExistingMenu();
+
+            async function loadExistingMenu() {
+                try {
+                    const response = await fetchMenus();
+                    if (response && response.menus && response.menus.length > 0) {
+                        // Mostrar el último menú del restaurante
+                        const restaurantMenus = response.menus.filter(menu => menu.bar_rest === userInfo.nombre);
+                        if (restaurantMenus.length > 0) {
+                            const latestMenu = restaurantMenus[restaurantMenus.length - 1];
+                            displayMenu(latestMenu);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error cargando menú existente:', error);
+                }
+            }
+
+            function displayMenu(menu) {
+                const menuItems = document.getElementById('menuItems');
+                const primerosHTML = menu.primeros ? menu.primeros.map(plato =>
+                    `<div class="menu-item">
+                        <div class="item-info">
+                            <h4>${plato}</h4>
+                            <p>Primer plato</p>
+                        </div>
+                        <div class="item-price">Precio incluido</div>
+                    </div>`
+                ).join('') : '';
+
+                const segundosHTML = menu.segundos ? menu.segundos.map(plato =>
+                    `<div class="menu-item">
+                        <div class="item-info">
+                            <h4>${plato}</h4>
+                            <p>Segundo plato</p>
+                        </div>
+                        <div class="item-price">Precio incluido</div>
+                    </div>`
+                ).join('') : '';
+
+                menuItems.innerHTML = primerosHTML + segundosHTML;
+            }
+        });
+    </script>
+</body>
+</html>
