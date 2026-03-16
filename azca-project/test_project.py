@@ -47,10 +47,10 @@ def test_api():
             data = json.loads(response.read().decode())
             print("✅ API responde correctamente")
 
-        # Probar login
+        # Probar login (usa credenciales de entorno si existen)
         login_data = {
-            'email': 'taberna@azca.com',
-            'password': 'password123'
+            'email': os.environ.get('AZCA_TEST_EMAIL', 'bar@azca.com'),
+            'password': os.environ.get('AZCA_TEST_PASSWORD', '1234')
         }
 
         req = urllib.request.Request(

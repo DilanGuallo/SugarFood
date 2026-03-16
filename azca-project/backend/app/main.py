@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from .models.schemas import MenuAzca, PredictionResponse, UsuarioCreate, Usuario, LoginRequest
 from .services.db_service import get_menus, save_menu_azca, create_usuario, get_usuario_by_email, get_all_menus, get_menus_by_usuario, verify_user_credentials
 from .services.doc_intel import analyze_menu_image
+from .services.ml_service import predict_dishes_for_date
 import jwt
 import datetime
 
@@ -87,3 +88,15 @@ async def predict_menu(file: UploadFile = File(...), current_user: dict = Depend
 async def create_menu(menu: MenuAzca, current_user: dict = Depends(verify_token)):
     save_menu_azca(menu, current_user['id'])
     return {"message": "Menú guardado"}
+
+@app.get("/recommend-menu")
+async def recommend_menu(current_user: dict = Depends(verify_token)):
+    """Devuelve una recomendación de platos (según mes/día) usando un modelo de Azure ML."""
+    today = datetime.datetime.utcnow()
+
+    try:
+        recommendation = predict_dishes_for_date(today.month, today.day)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener recomendación: {e}")
+
+    return {"recommendation": recommendation}

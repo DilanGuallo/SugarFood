@@ -44,6 +44,14 @@ Proyecto de Machine Learning para reconocimiento de menús usando Azure AI con *
 2. Copia el **endpoint** y la **key**.
 3. Actualiza `backend/config/azure_doc_intel.json` con esos valores.
 
+## Configuración de Azure Machine Learning (Recomendaciones)
+
+1. Crea un **Azure Machine Learning Online Endpoint** y despliega tu modelo.
+2. Copia el **endpoint URL** y la **key de autenticación**.
+3. Actualiza `backend/config/azure_ml.json` con esos valores.
+
+> El backend llamará a `/recommend-menu` y mostrará la recomendación en el dashboard del restaurante.
+
 ## Datos de Prueba
 
 Para probar el sistema, puedes usar estos usuarios de ejemplo (las contraseñas están hasheadas con bcrypt):

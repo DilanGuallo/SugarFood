@@ -198,6 +198,20 @@
             gap: 15px;
         }
 
+        .recommendation-section {
+            background: #fffbe6;
+            border: 1px solid #f5e3b8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
         .menu-item {
             display: flex;
             justify-content: space-between;
@@ -359,6 +373,13 @@
             <div class="menu-header">
                 <h3>Menú Actual</h3>
                 <span class="menu-status status-active" id="menuStatus">Activo</span>
+            </div>
+
+            <div class="recommendation-section" id="recommendationSection">
+                <h4>Recomendación del día</h4>
+                <div class="menu-items" id="recommendationItems">
+                    <!-- La recomendación se cargará aquí -->
+                </div>
             </div>
 
             <div class="menu-items" id="menuItems">
@@ -615,7 +636,64 @@
                 document.getElementById('revenueToday').textContent = '40.50€';
             }
 
-            // Cargar menú existente si hay
+            async function loadRecommendation() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/recommend-menu`, {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('No se pudo obtener la recomendación');
+                    }
+
+                    const data = await response.json();
+                    if (data && data.recommendation) {
+                        displayRecommendation(data.recommendation);
+                    }
+                } catch (error) {
+                    console.error('Error cargando recomendación:', error);
+                }
+            }
+
+            function displayRecommendation(recommendation) {
+                const recContainer = document.getElementById('recommendationItems');
+                if (!recContainer) return;
+
+                // Dependiendo de lo que devuelva el modelo, adaptamos la visualización.
+                // Suponemos que la recomendación puede ser un array de platos.
+                if (Array.isArray(recommendation)) {
+                    recContainer.innerHTML = recommendation.map(plato => `
+                        <div class="menu-item">
+                            <div class="item-info">
+                                <h4>${plato}</h4>
+                                <p>Recomendado por ML</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else if (typeof recommendation === 'object' && recommendation !== null) {
+                    // Si viene un objeto con secciones
+                    const keys = Object.keys(recommendation);
+                    recContainer.innerHTML = keys.map(key => {
+                        const items = recommendation[key];
+                        if (!Array.isArray(items)) return '';
+                        return items.map(plato => `
+                            <div class="menu-item">
+                                <div class="item-info">
+                                    <h4>${plato}</h4>
+                                    <p>${key}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                    }).join('');
+                } else {
+                    recContainer.innerHTML = `<p>No hay recomendaciones disponibles.</p>`;
+                }
+            }
+
+            // Cargar recomendación diaria y menú existente
+            await loadRecommendation();
             loadExistingMenu();
 
             async function loadExistingMenu() {
