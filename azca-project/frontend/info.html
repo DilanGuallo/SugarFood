@@ -4,8 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SugarFood - El Proyecto</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos adicionales para reactividad */
+        .hero-info {
+            position: relative;
+            background: linear-gradient(140deg, rgba(24,24,24,0.7) 0%, rgba(24,24,24,0.7) 100%), url('https://images.unsplash.com/photo-1529692236671-f1ad1bff6f90?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80') no-repeat center/cover;
+            color: #fff;
+            padding: 120px 20px 100px;
+            text-align: center;
+            margin-top: -60px; /* Para compensar el header */
+        }
+        .hero-info h1 { 
+            font-size: 3.5rem; 
+            letter-spacing: 1px; 
+            margin-bottom: 18px; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            animation: fadeInUp 1s ease-out;
+        }
+        .hero-info p { 
+            font-size: 1.3rem; 
+            max-width: 720px; 
+            margin: 0 auto 28px; 
+            line-height: 1.6; 
+            color: rgba(255,255,255,0.9);
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        .hero-info .btn {
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        .stat-counter {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--brand-color);
+            margin-bottom: 10px;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #f8f9fa 100%);
+            padding: 60px 20px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-item h3 {
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .interactive-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') no-repeat center/cover;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        .expandable-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expandable-card.expanded .card-content {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .expand-btn {
+            background: var(--brand-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .expand-btn:hover {
+            background: var(--brand-hover);
+        }
+
+        @media (max-width: 768px) {
+            .hero-info { padding: 100px 18px 80px; }
+            .hero-info h1 { font-size: 2.8rem; }
+            .carousel-slide img { height: 300px; }
+            .stat-counter { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body class="bg-main">
 
@@ -18,7 +149,13 @@
         </div>
     </header>
 
-    <main>
+    <section class="hero-info">
+        <h1>Descubre SugarFood</h1>
+        <p>La revolución en la gestión de menús para restaurantes y clientes en Azca. Tecnología inteligente que conecta la gastronomía local con la eficiencia digital.</p>
+        <a href="#main-content" class="btn btn-brand">Explorar Proyecto</a>
+    </section>
+
+    <main id="main-content">
         <section class="container" style="padding: 60px 20px; max-width: 1000px;">
             <div class="carousel" id="infoCarousel">
                 <div class="carousel-track">
@@ -44,6 +181,32 @@
                 <div class="carousel-controls" aria-label="Controles de carrusel"></div>
             </div>
 
+            <div class="stats-section">
+                <h2>Impacto en Números</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-counter" data-target="500">0</div>
+                        <h3>Restaurantes Conectados</h3>
+                        <p>En la zona de Azca</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-counter" data-target="10000">0</div>
+                        <h3>Menús Procesados</h3>
+                        <p>Con IA avanzada</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-counter" data-target="95">0</div>
+                        <h3>% Precisión</h3>
+                        <p>En extracción de datos</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-counter" data-target="30">0</div>
+                        <h3>Minutos Ahorrados</h3>
+                        <p>Por consulta de menú</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="image-grid">
                 <div class="image-card">
                     <img src="https://images.unsplash.com/photo-1498654896293-37aacf113fd9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Persona consultando menú en el móvil">
@@ -57,22 +220,50 @@
                     <img src="https://images.unsplash.com/photo-1555992336-03a23c5759b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Cliente eligiendo opciones desde la app">
                     <p>Elige según tus prioridades: precio, tiempo o tus platos favoritos.</p>
                 </div>
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Comida gourmet preparada">
+                    <p>Descubre platos gourmet preparados con ingredientes frescos locales.</p>
+                </div>
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Equipo de cocina profesional">
+                    <p>Cocineros profesionales creando experiencias culinarias únicas.</p>
+                </div>
+                <div class="image-card">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Ambiente acogedor del restaurante">
+                    <p>Ambientes acogedores que complementan la experiencia gastronómica.</p>
+                </div>
             </div>
 
-            <div class="info-section">
+            <div class="info-section interactive-section">
+                <div class="interactive-bg"></div>
                 <h2>Cómo lo usa el cliente</h2>
                 <div class="info-grid">
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-stopwatch" style="color: var(--brand-color); margin-right: 10px;"></i> Encuentra rápido</h3>
                         <p>Consulta menús actuales sin pedir información por teléfono ni desplazarte para comprobar disponibilidad.</p>
+                        <div class="card-content">
+                            <p>Con SugarFood, accede a menús actualizados en tiempo real desde cualquier lugar. Olvídate de llamadas frustrantes o visitas innecesarias solo para ver qué hay disponible.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-filter" style="color: var(--brand-color); margin-right: 10px;"></i> Filtra por lo que necesitas</h3>
                         <p>Ordena por precio, tipo de plato o tiempo de espera para elegir con confianza en tu hora de comida.</p>
+                        <div class="card-content">
+                            <p>Nuestro sistema de filtros inteligentes te permite encontrar exactamente lo que buscas. ¿Buscas algo rápido y económico? ¿O prefieres una comida elaborada? SugarFood te guía a la mejor opción.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-route" style="color: var(--brand-color); margin-right: 10px;"></i> Planifica tu ruta</h3>
                         <p>Elige restaurantes cercanos con menú actualizado; así reduces tiempo de traslado y maximizas tu pausa.</p>
+                        <div class="card-content">
+                            <p>Integración con mapas para optimizar tu ruta. Encuentra el restaurante perfecto sin perder tiempo valioso en tu jornada laboral.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
                 </div>
             </div>
@@ -80,17 +271,32 @@
             <div class="info-section">
                 <h2>Cómo lo usa el restaurante</h2>
                 <div class="info-grid">
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-upload" style="color: var(--brand-color); margin-right: 10px;"></i> Publica tu menú en segundos</h3>
                         <p>Sube una foto del menú y el sistema extrae los platos y precios automáticamente, sin que tengas que redactar nada.</p>
+                        <div class="card-content">
+                            <p>Utilizamos inteligencia artificial avanzada para reconocer texto en imágenes. Solo toma una foto con tu móvil y en segundos tu menú estará disponible para miles de clientes potenciales.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-chart-bar" style="color: var(--brand-color); margin-right: 10px;"></i> Más visibilidad</h3>
                         <p>Los clientes ven tu oferta en tiempo real, lo que reduce preguntas y llamadas para confirmar el menú.</p>
+                        <div class="card-content">
+                            <p>Aumenta tu alcance a clientes que buscan opciones de comida rápida y eficiente. Reduce el tiempo dedicado a atender consultas telefónicas sobre disponibilidad.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
-                    <div class="info-card">
+                    <div class="info-card expandable-card" onclick="toggleExpand(this)">
                         <h3><i class="fas fa-leaf" style="color: var(--brand-color); margin-right: 10px;"></i> Menos desperdicio</h3>
                         <p>Al saber qué platos son los más buscados, puedes ajustar producción y evitar sobrantes.</p>
+                        <div class="card-content">
+                            <p>Analítica inteligente que te ayuda a optimizar tu inventario y reducir costos operativos mediante una mejor comprensión de la demanda del cliente.</p>
+                            <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this.parentElement.parentElement)">Leer menos</button>
+                        </div>
+                        <button class="expand-btn" onclick="event.stopPropagation(); toggleExpand(this)">Saber más</button>
                     </div>
                 </div>
             </div>
@@ -148,6 +354,62 @@
     </footer>
 
     <script>
+        // Función para expandir/contraer tarjetas
+        function toggleExpand(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Animación de contadores
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-counter');
+            const speed = 200;
+
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const increment = target / speed;
+
+                const updateCount = () => {
+                    const count = +counter.innerText;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(updateCount, 1);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+
+                updateCount();
+            });
+        }
+
+        // Intersection Observer para animar contadores cuando sean visibles
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observar la sección de estadísticas
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Smooth scrolling para el enlace del hero
+        document.querySelector('.hero-info .btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('#main-content').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
         // Carousel simple: avanza cada 4s y permite selección mediante puntos.
         (function() {
             const track = document.querySelector('#infoCarousel .carousel-track');
@@ -186,8 +448,36 @@
             controls.addEventListener('mouseenter', () => clearInterval(autoplay));
             controls.addEventListener('mouseleave', () => { autoplay = setInterval(nextSlide, 4200); });
 
+            // Navegación por teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    goToSlide((currentIndex - 1 + slides.length) % slides.length);
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                }
+            });
+
             window.addEventListener('resize', () => goToSlide(currentIndex));
         })();
+
+        // Animación de fade in al hacer scroll
+        const fadeInElements = document.querySelectorAll('.info-section, .image-grid');
+
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeInElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            fadeInObserver.observe(el);
+        });
     </script>
 
 </body>
