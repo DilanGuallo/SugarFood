@@ -570,24 +570,22 @@
                 uploadBtn.disabled = true;
                 uploadBtn.textContent = 'Procesando...';
 
-                // Simular progreso
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += 10;
-                    progressFill.style.width = progress + '%';
-                    if (progress >= 100) {
-                        clearInterval(progressInterval);
+                try {
+                    const response = await uploadMenuImage(file);
+                    if (response && response.menu) {
+                        progressFill.style.width = '100%';
                         progressText.textContent = '¡Procesamiento completado!';
-                        uploadBtn.disabled = false;
-                        uploadBtn.textContent = 'Procesar Menú con IA';
-
-                        // Aquí iría la lógica real de procesamiento de IA
-                        setTimeout(() => {
-                            progressContainer.style.display = 'none';
-                            showProcessedMenu();
-                        }, 1000);
+                        displayMenu(response.menu);
+                    } else {
+                        throw new Error('No se obtuvo un menú válido del servidor');
                     }
-                }, 200);
+                } catch (error) {
+                    console.error('Error al procesar la imagen:', error);
+                    alert('Ocurrió un error procesando la imagen. Reintenta más tarde.');
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = 'Procesar Menú con IA';
+                }
             }
 
             function showProcessedMenu() {

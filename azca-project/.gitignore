@@ -38,6 +38,7 @@ Thumbs.db
 
 # Secrets
 backend/config/connections.json
+backend/config/azure_doc_intel.json
 backend/.env
 *.key
 *.pem

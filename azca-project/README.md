@@ -38,6 +38,12 @@ Proyecto de Machine Learning para reconocimiento de menús usando Azure AI con *
 3. **Opcional**: Ejecuta `backend/sample_data.sql` para cargar datos de prueba
 4. Actualiza `backend/config/connections.json` con tus credenciales de MySQL
 
+## Configuración de Azure Document Intelligence
+
+1. Crea un recurso de **Azure Cognitive Services (Document Intelligence)** en el portal de Azure.
+2. Copia el **endpoint** y la **key**.
+3. Actualiza `backend/config/azure_doc_intel.json` con esos valores.
+
 ## Datos de Prueba
 
 Para probar el sistema, puedes usar estos usuarios de ejemplo (las contraseñas están hasheadas con bcrypt):

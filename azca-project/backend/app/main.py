@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from .models.schemas import MenuAzca, PredictionResponse, UsuarioCreate, Usuario, LoginRequest
 from .services.db_service import get_menus, save_menu_azca, create_usuario, get_usuario_by_email, get_all_menus, get_menus_by_usuario, verify_user_credentials
+from .services.doc_intel import analyze_menu_image
 import jwt
 import datetime
 
@@ -69,21 +70,18 @@ async def get_menus_endpoint(current_user: dict = Depends(verify_token)):
 
 @app.post("/predict-menu")
 async def predict_menu(file: UploadFile = File(...), current_user: dict = Depends(verify_token)):
-    # Procesar imagen con IA (simulado por ahora)
-    menu_data = MenuAzca(
-        menu_del_dia="Menú del Día",
-        precio="13.50€",
-        bar_rest="La Taberna de Azca",
-        aperitivo="Pan con alioli",
-        primeros=["Salmorejo cordobés con crujiente de jamón", "Ensalada de queso de cabra y nueces"],
-        segundos=["Entrecot a la parrilla con patatas", "Lomo de salmón al horno"],
-        complemento=["Pan", "Bebida"],
-        postre=["Tarta de queso", "Fruta del tiempo"],
-        menu_infantil=["Macarrones con queso", "Pollo con patatas"]
-    )
+    # Leer bytes del archivo subido
+    file_bytes = await file.read()
+
+    try:
+        menu_data = analyze_menu_image(file_bytes, file.content_type)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al analizar el menú: {e}")
+
     # Guardar en DB
     save_menu_azca(menu_data, current_user['id'])
-    return PredictionResponse(menu=menu_data, confidence=0.95)
+
+    return PredictionResponse(menu=menu_data, confidence=0.85)
 
 @app.post("/menus")
 async def create_menu(menu: MenuAzca, current_user: dict = Depends(verify_token)):
