@@ -44,59 +44,95 @@ def _extract_text_from_layout_response(response_json: dict) -> str:
     return "\n".join(lines)
 
 
+def _extract_field_value(field_obj: dict) -> str | list:
+    """Extrae el valor de un field del modelo custom, manejando valueString y valueArray."""
+    if not isinstance(field_obj, dict):
+        return None
+    
+    # Intentar extraer valueString (campo simple)
+    if 'valueString' in field_obj:
+        value = field_obj['valueString']
+        if value:
+            return value
+    
+    # Intentar extraer valueArray (múltiples valores)
+    if 'valueArray' in field_obj:
+        array = field_obj['valueArray']
+        if isinstance(array, list):
+            values = []
+            for item in array:
+                if isinstance(item, dict) and 'valueString' in item:
+                    val = item['valueString']
+                    if val:
+                        values.append(val)
+            return values if values else None
+    
+    return None
+
+
 def _parse_menu_fields(fields: dict) -> MenuAzca:
     """Parsea fields extraídos por un modelo custom de Document Intelligence."""
     menu = MenuAzca()
 
-    # Mapear campos conocidos - buscar por contenido en el nombre del field
+    # Procesar cada campo extraído por el modelo custom
     for field_name, value_obj in fields.items():
+        if not isinstance(value_obj, dict):
+            continue
+        
         field_lower = field_name.lower()
+        extracted_value = _extract_field_value(value_obj)
+        
+        # Si no hay valor extraído, saltar
+        if not extracted_value:
+            continue
 
-        if 'menu' in field_lower and 'dia' in field_lower:
-            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.menu_del_dia = value_obj['valueString']
-        elif 'precio' in field_lower:
-            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.precio = value_obj['valueString']
-        elif 'bar' in field_lower or 'rest' in field_lower:
-            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.bar_rest = value_obj['valueString']
-        elif 'telefono' in field_lower or 'tel' in field_lower:
-            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.telefono = value_obj['valueString']
-        elif 'aperitivo' in field_lower:
-            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.aperitivo = value_obj['valueString']
-        elif 'primero' in field_lower or 'primeros' in field_lower:
-            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
-                menu.primeros = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
-            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.primeros = [value_obj['valueString']]
-        elif 'segundo' in field_lower or 'segundos' in field_lower:
-            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
-                menu.segundos = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
-            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.segundos = [value_obj['valueString']]
-        elif 'complemento' in field_lower or 'guarnicion' in field_lower:
-            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
-                menu.complemento = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
-            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.complemento = [value_obj['valueString']]
-        elif 'postre' in field_lower:
-            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
-                menu.postre = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
-            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.postre = [value_obj['valueString']]
-        elif 'infantil' in field_lower or 'nino' in field_lower:
-            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
-                menu.menu_infantil = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
-            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
-                menu.menu_infantil = [value_obj['valueString']]
-
-    # Guardar fields crudos para depuración
-    menu.platos = str(fields)
+        # Mapear campos al modelo MenuAzca
+        if field_lower == 'menu_del_dia':
+            menu.menu_del_dia = extracted_value
+        elif field_lower == 'precio':
+            menu.precio = extracted_value
+        elif field_lower == 'bar/rest' or field_lower == 'bar_rest':
+            menu.bar_rest = extracted_value
+        elif field_lower == 'telefono':
+            menu.telefono = extracted_value
+        elif field_lower == 'dia':
+            menu.dia = extracted_value
+        elif field_lower == 'fecha':
+            menu.fecha = extracted_value
+        elif field_lower == 'aperitivo':
+            menu.aperitivo = extracted_value
+        elif field_lower == 'primeros':
+            # primeros puede ser string o lista
+            menu.primeros = extracted_value if isinstance(extracted_value, list) else [extracted_value]
+        elif field_lower == 'segundos':
+            menu.segundos = extracted_value if isinstance(extracted_value, list) else [extracted_value]
+        elif field_lower == 'complemento':
+            menu.complemento = extracted_value if isinstance(extracted_value, list) else [extracted_value]
+        elif field_lower == 'postre':
+            menu.postre = extracted_value if isinstance(extracted_value, list) else [extracted_value]
+        elif field_lower == 'menu_infantil':
+            menu.menu_infantil = extracted_value if isinstance(extracted_value, list) else [extracted_value]
+        elif field_lower == 'platos':
+            menu.platos = extracted_value
 
     return menu
+
+
+def _parse_menu_key_value_pairs(key_value_pairs: list) -> MenuAzca:
+    """Parsea key-value pairs extraídos por Document Intelligence (formato legacy)."""
+    menu = MenuAzca()
+    
+    # Convertir key-value pairs a un diccionario y parsear
+    fields_dict = {}
+    for pair in key_value_pairs:
+        if isinstance(pair, dict):
+            key = pair.get('key', {}).get('content', '').lower()
+            value = pair.get('value', {}).get('content', '')
+            if key and value:
+                fields_dict[key] = {'valueString': value}
+    
+    # Usar el parseador de fields existente
+    return _parse_menu_fields(fields_dict)
 
 
 def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
@@ -109,7 +145,7 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
     if not endpoint or not key:
         raise RuntimeError('Falta endpoint, key o model_id en backend/config/connections.json')
 
-    api_version = cfg.get('api_version', '2023-07-31')
+    api_version = cfg.get('api_version', '2024-11-30')
     url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/{model_id}:analyze?api-version={api_version}"
 
     headers = {
@@ -136,7 +172,7 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
     max_retries = 30  # Máximo 30 intentos (aprox. 1 minuto)
     retry_delay = 2   # 2 segundos entre intentos
 
-    for _ in range(max_retries):
+    for attempt in range(max_retries):
         result_response = requests.get(operation_location, headers={'Ocp-Apim-Subscription-Key': key})
         
         if result_response.status_code == 200:
@@ -144,24 +180,31 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
             status = result_json.get('status')
             
             if status == 'succeeded':
-                # Extraer fields del resultado (para modelos custom)
+                # Extraer fields del resultado
                 analyze_result = result_json.get('analyzeResult', {})
                 documents = analyze_result.get('documents', [])
+                
                 if documents:
-                    fields = documents[0].get('fields', {})
-                    print(f"DEBUG: Fields extraídos: {fields}")
-                    for field_name, value_obj in fields.items():
-                        print(f"DEBUG: Field {field_name}: {value_obj}")
+                    # Usar el primer documento encontrado
+                    doc = documents[0]
+                    fields = doc.get('fields', {})
+                    print(f"DEBUG: Fields extraídos del documento: {list(fields.keys())}")
                     menu = _parse_menu_fields(fields)
+                    print(f"DEBUG: MenuAzca parseado: {menu}")
+                    return menu
                 else:
+                    # Fallback a key-value pairs si no hay documentos estructurados
                     key_value_pairs = analyze_result.get('keyValuePairs', [])
-                    print(f"DEBUG: Key-value pairs extraídos: {key_value_pairs}")
+                    print(f"DEBUG: Key-value pairs extraídos (fallback): {len(key_value_pairs)} pares")
                     menu = _parse_menu_key_value_pairs(key_value_pairs)
-                return menu
+                    return menu
+            
             if status == 'failed':
                 error_details = result_json.get('error', {}).get('message', 'Error desconocido')
                 raise RuntimeError(f"El análisis falló: {error_details}")
         
-        time.sleep(retry_delay)
+        # Si no está listo, esperar
+        if attempt < max_retries - 1:
+            time.sleep(retry_delay)
     
     raise RuntimeError("Tiempo de espera agotado para el análisis de la imagen")
