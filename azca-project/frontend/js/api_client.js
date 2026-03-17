@@ -69,11 +69,14 @@ async function uploadMenuImage(imageFile) {
             },
             body: formData
         });
-        if (!response.ok) throw new Error('Error al procesar imagen');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error del servidor: ${response.status} - ${errorText}`);
+        }
         return await response.json();
     } catch (error) {
         console.error('Error:', error);
-        return null;
+        throw error; // Re-throw to show in alert
     }
 }
 

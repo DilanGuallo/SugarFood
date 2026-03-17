@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from .models.schemas import MenuAzca, PredictionResponse, UsuarioCreate, Usuario, LoginRequest
+from .models.schemas import MenuAzca, PredictionResponse, UsuarioCreate, Usuario, LoginRequest, RatingCreate
 from .services.db_service import get_menus, save_menu_azca, create_usuario, get_usuario_by_email, get_all_menus, get_menus_by_usuario, verify_user_credentials
 from .services.doc_intel import analyze_menu_image
 from .services.ml_service import predict_dishes_for_date
@@ -79,9 +79,6 @@ async def predict_menu(file: UploadFile = File(...), current_user: dict = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al analizar el menú: {e}")
 
-    # Guardar en DB
-    save_menu_azca(menu_data, current_user['id'])
-
     return PredictionResponse(menu=menu_data, confidence=0.85)
 
 @app.post("/menus")
@@ -94,9 +91,68 @@ async def recommend_menu(current_user: dict = Depends(verify_token)):
     """Devuelve una recomendación de platos (según mes/día) usando un modelo de Azure ML."""
     today = datetime.datetime.utcnow()
 
+    error_message = None
     try:
         recommendation = predict_dishes_for_date(today.month, today.day)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener recomendación: {e}")
+        # No queremos romper el dashboard si la API de ML falla
+        error_message = str(e)
+        print(f"[WARN] Error obteniendo recomendación de ML: {e}")
+        recommendation = []
 
-    return {"recommendation": recommendation}
+    # Asegurar que siempre devolvemos algo que el frontend puede mostrar
+    if not recommendation:
+        recommendation = [
+            "Prueba hoy nuestro menú especial",
+            "Actualiza tu menú para ver recomendaciones"
+        ]
+
+    response = {"recommendation": recommendation}
+    if error_message:
+        response["error"] = error_message
+    return response
+
+# Endpoints para ratings/valoraciones
+@app.post("/menus/{menu_id}/ratings")
+async def create_rating(menu_id: int, rating_data: RatingCreate, current_user = Depends(verify_token)):
+    """Crear una nueva valoración para un menú"""
+    from .services.db_service import save_rating
+    
+    try:
+        puntuacion = rating_data.puntuacion
+        resena = rating_data.resena
+        
+        # Validar puntuación (el modelo ya lo hace, pero por si acaso)
+        if not puntuacion or puntuacion < 1 or puntuacion > 5:
+            raise HTTPException(status_code=400, detail="Puntuación debe estar entre 1 y 5")
+        
+        # Obtener usuario_id del token
+        usuario_id = current_user.get("id")
+        
+        # Guardar la valoración
+        success = save_rating(menu_id, usuario_id, puntuacion, resena)
+        if success:
+            return {"message": "Valoración guardada exitosamente", "menu_id": menu_id}
+        else:
+            raise HTTPException(status_code=500, detail="Error guardando la valoración")
+    except Exception as e:
+        print(f"Error en create_rating: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/menus/{menu_id}/ratings")
+async def get_ratings(menu_id: int):
+    """Obtener todas las valoraciones de un menú"""
+    from .services.db_service import get_ratings_by_menu, get_average_rating
+    
+    try:
+        ratings = get_ratings_by_menu(menu_id)
+        average = get_average_rating(menu_id)
+        
+        return {
+            "menu_id": menu_id,
+            "ratings": ratings,
+            "average_rating": average
+        }
+    except Exception as e:
+        print(f"Error en get_ratings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

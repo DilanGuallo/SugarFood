@@ -307,6 +307,201 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* Estilos para ratings */
+        .ratings-section {
+            background: white;
+            padding: 40px;
+            margin-top: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .ratings-section h3 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ratings-section h3 i {
+            color: #ffd700;
+        }
+
+        .rating-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            font-size: 2rem;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+            transform: scale(1.2);
+        }
+
+        .rating-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+
+        .rating-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-submit-rating {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit-rating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit-rating:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ratings-list {
+            margin-top: 30px;
+        }
+
+        .rating-stats {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+        }
+
+        .average-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 30px;
+            border-right: 2px solid #ddd;
+        }
+
+        .average-rating .number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .average-rating .stars {
+            color: #ffd700;
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .review-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .review-user {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .review-stars {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .no-reviews i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
     </style>
 </head>
 <body class="bg-main">
@@ -432,6 +627,58 @@
                     Llamar al Restaurante
                 </button>
             </div>
+
+            <!-- Sección de Ratings y Reseñas -->
+            <div class="ratings-section">
+                <h3>
+                    <i class="fas fa-star"></i>
+                    Valoraciones
+                </h3>
+
+                <!-- Estadísticas de ratings -->
+                <div class="rating-stats" id="ratingStats" style="display: none;">
+                    <div class="average-rating">
+                        <div class="number" id="averageRating">0</div>
+                        <div class="stars" id="averageStars">★★★★★</div>
+                        <div class="rating-count" id="totalRatings">0 valoraciones</div>
+                    </div>
+                </div>
+
+                <!-- Formulario para agregar rating -->
+                <div class="rating-form">
+                    <h4 style="color: #333; margin-bottom: 20px;">Comparte tu opinión</h4>
+                    
+                    <div class="form-group">
+                        <label>Tu valoración (1-5 estrellas)</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <input type="hidden" id="selectedRating" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewText">Tu reseña (opcional)</label>
+                        <textarea id="reviewText" class="rating-textarea" placeholder="Cuéntanos qué te pareció el menú, la comida, el servicio..."></textarea>
+                    </div>
+
+                    <button class="btn-submit-rating" id="submitRatingBtn" onclick="submitRating()">
+                        <i class="fas fa-paper-plane" style="margin-right: 8px;"></i>
+                        Enviar Valoración
+                    </button>
+                </div>
+
+                <!-- Lista de ratings -->
+                <div class="ratings-list" id="ratingsList">
+                    <div class="no-reviews">
+                        <i class="fas fa-comments"></i>
+                        <p>No hay valoraciones aún. ¡Sé el primero en opinar!</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -502,6 +749,9 @@
     <script src="js/main.js"></script>
     <script src="js/api_client.js"></script>
     <script>
+        let currentMenuId = null;
+        let selectedRatingValue = 0;
+
         // Página de detalle de restaurante/menú
         document.addEventListener('DOMContentLoaded', async () => {
             // Verificar autenticación
@@ -514,6 +764,7 @@
             // Obtener ID del menú de la URL
             const urlParams = new URLSearchParams(window.location.search);
             const menuId = urlParams.get('id');
+            currentMenuId = menuId;
 
             if (menuId) {
                 try {
@@ -522,6 +773,7 @@
                         const menu = response.menus.find(m => m.id == menuId);
                         if (menu) {
                             displayMenuDetails(menu);
+                            loadRatings(menuId);
                         } else {
                             alert('Menú no encontrado');
                             window.location.href = 'dashboard-cliente.html';
@@ -535,6 +787,9 @@
                 // Mostrar menú de ejemplo si no hay ID
                 displaySampleMenu();
             }
+
+            // Configurar interacción con estrellas
+            setupStarRating();
         });
 
         function displayMenuDetails(menu) {
@@ -674,6 +929,178 @@
                 observer.observe(item);
             });
         }, 100);
+
+        // ========== Funciones para Ratings ==========
+
+        function setupStarRating() {
+            const stars = document.querySelectorAll('.star-rating .star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRatingValue = this.getAttribute('data-value');
+                    document.getElementById('selectedRating').value = selectedRatingValue;
+                    
+                    // Actualizar visualización de estrellas
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-value') <= selectedRatingValue) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+
+                // Efecto hover
+                star.addEventListener('mouseover', function() {
+                    const value = this.getAttribute('data-value');
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-value') <= value) {
+                            s.style.color = '#ffd700';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+            });
+
+            // Restaurar estado al salir del hover
+            document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+                stars.forEach(s => {
+                    if (s.getAttribute('data-value') <= selectedRatingValue) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        async function loadRatings(menuId) {
+            try {
+                const response = await fetch(`http://localhost:8000/menus/${menuId}/ratings`);
+                const data = await response.json();
+
+                if (data && data.ratings) {
+                    displayRatings(data.ratings, data.average_rating);
+                }
+            } catch (error) {
+                console.error('Error cargando ratings:', error);
+            }
+        }
+
+        function displayRatings(ratings, averageData) {
+            const ratingsList = document.getElementById('ratingsList');
+            const ratingStats = document.getElementById('ratingStats');
+
+            // Mostrar estadísticas si hay ratings
+            if (ratings.length > 0) {
+                ratingStats.style.display = 'flex';
+                const avgValue = averageData.promedio || 0;
+                const totalCount = averageData.total || 0;
+                
+                document.getElementById('averageRating').textContent = avgValue.toFixed(1);
+                document.getElementById('averageStars').textContent = generateStars(avgValue);
+                document.getElementById('totalRatings').textContent = `${totalCount} valoración${totalCount !== 1 ? 'es' : ''}`;
+            }
+
+            // Mostrar ratings individuales
+            if (ratings.length > 0) {
+                ratingsList.innerHTML = ratings.map(rating => `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-user">${rating.nombre_usuario}</span>
+                            <span class="review-date">${formatDate(rating.fecha)}</span>
+                        </div>
+                        <div class="review-stars">${generateStars(rating.puntuacion)}</div>
+                        ${rating.resena ? `<div class="review-text">${escapeHtml(rating.resena)}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function submitRating() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('Debes iniciar sesión para dejar una valoración');
+                return;
+            }
+
+            const rating = parseInt(document.getElementById('selectedRating').value);
+            const review = document.getElementById('reviewText').value;
+
+            if (rating === 0) {
+                alert('Por favor selecciona un número de estrellas');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitRatingBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                const response = await fetch(`http://localhost:8000/menus/${currentMenuId}/ratings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        puntuacion: rating,
+                        resena: review
+                    })
+                });
+
+                if (response.ok) {
+                    alert('¡Valoración enviada exitosamente!');
+                    // Limpiar formulario
+                    document.getElementById('selectedRating').value = 0;
+                    document.getElementById('reviewText').value = '';
+                    document.querySelectorAll('.star-rating .star').forEach(s => s.classList.remove('active'));
+                    selectedRatingValue = 0;
+                    // Recargar ratings
+                    loadRatings(currentMenuId);
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + (errorData.detail || 'No se pudo guardar la valoración'));
+                }
+            } catch (error) {
+                console.error('Error enviando rating:', error);
+                alert('Error al enviar la valoración');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right: 8px;"></i>Enviar Valoración';
+            }
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalf = rating % 1 >= 0.5;
+            let stars = '★'.repeat(fullStars);
+            if (hasHalf && fullStars < 5) stars += '☆';
+            stars += '☆'.repeat(Math.max(0, 5 - fullStars - (hasHalf ? 1 : 0)));
+            return stars;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Hoy';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Ayer';
+            } else {
+                return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </body>
 </html>

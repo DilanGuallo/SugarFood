@@ -73,6 +73,19 @@ CREATE TABLE IF NOT EXISTS menus_infantiles (
     FOREIGN KEY (menu_id) REFERENCES menus_azca(id) ON DELETE CASCADE
 );
 
+-- Tabla para valoraciones y reseñas
+CREATE TABLE IF NOT EXISTS valoraciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    menu_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    puntuacion INT CHECK (puntuacion BETWEEN 1 AND 5) NOT NULL,
+    resena TEXT,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (menu_id) REFERENCES menus_azca(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios_azca(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_review (menu_id, usuario_id)
+);
+
 -- Índices para mejorar rendimiento
 CREATE INDEX idx_usuarios_email ON usuarios_azca(email);
 CREATE INDEX idx_usuarios_rol ON usuarios_azca(rol);

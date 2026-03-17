@@ -12,15 +12,16 @@ from pathlib import Path
 
 
 def _load_config() -> dict:
-    """Carga la configuración local para Document Intelligence."""
-    config_path = Path(__file__).resolve().parents[2] / 'config' / 'azure_doc_intel.json'
+    """Carga la configuración de Document Intelligence desde connections.json."""
+    config_path = Path(__file__).resolve().parents[2] / 'config' / 'connections.json'
     try:
         with open(config_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            full_config = json.load(f)
+        return full_config.get('document_intelligence', {})
     except FileNotFoundError as e:
         raise RuntimeError(
-            f"No se encontró la configuración de Azure Document Intelligence en {config_path}. "
-            "Crea ese archivo con endpoint y key." 
+            f"No se encontró la configuración en {config_path}. "
+            "Asegúrate de que existe la sección 'document_intelligence'." 
         ) from e
 
 
@@ -125,21 +126,48 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
         raise RuntimeError('Falta endpoint o key en backend/config/azure_doc_intel.json')
 
     api_version = cfg.get('api_version', '2023-07-31')
-    url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/prebuilt-layout:analyze?api-version={api_version}"
+    url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/prebuilt-read:analyze?api-version={api_version}"
 
     headers = {
         'Ocp-Apim-Subscription-Key': key,
         'Content-Type': content_type or 'application/octet-stream'
     }
 
+    # Enviar la solicitud de análisis
     response = requests.post(url, headers=headers, data=file_bytes)
 
-    if not response.ok:
+    if response.status_code != 202:
+        error_text = response.text
         raise RuntimeError(
-            f"Error al analizar la imagen: {response.status_code} {response.text}"
+            f"Error al iniciar el análisis: {response.status_code} - {error_text}"
         )
 
-    json_response = response.json()
-    text = _extract_text_from_layout_response(json_response)
-    menu = _parse_menu_text(text)
-    return menu
+    # Obtener la URL de operación para consultar el resultado
+    operation_location = response.headers.get('Operation-Location')
+    if not operation_location:
+        raise RuntimeError("No se recibió la ubicación de la operación")
+
+    # Esperar y consultar el resultado
+    import time
+    max_retries = 30  # Máximo 30 intentos (aprox. 1 minuto)
+    retry_delay = 2   # 2 segundos entre intentos
+
+    for _ in range(max_retries):
+        result_response = requests.get(operation_location, headers={'Ocp-Apim-Subscription-Key': key})
+        
+        if result_response.status_code == 200:
+            result_json = result_response.json()
+            status = result_json.get('status')
+            
+            if status == 'succeeded':
+                # Extraer el texto del resultado
+                text = _extract_text_from_layout_response(result_json.get('analyzeResult', {}))
+                menu = _parse_menu_text(text)
+                return menu
+            if status == 'failed':
+                error_details = result_json.get('error', {}).get('message', 'Error desconocido')
+                raise RuntimeError(f"El análisis falló: {error_details}")
+        
+        time.sleep(retry_delay)
+    
+    raise RuntimeError("Tiempo de espera agotado para el análisis de la imagen")

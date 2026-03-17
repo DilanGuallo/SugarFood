@@ -17,7 +17,7 @@ def verify_password(password: str, hashed: str) -> bool:
 
 def get_db_connection():
     # Leer configuración desde el archivo JSON
-    with open('config/connections.json', 'r') as f:
+    with open('../config/connections.json', 'r') as f:
         config = json.load(f)
 
     db_config = config['database']
@@ -214,3 +214,71 @@ def save_menu(menu_data: dict):
 
 def get_menus():
     return get_all_menus()
+
+# Funciones para ratings/valoraciones
+def save_rating(menu_id: int, usuario_id: int, puntuacion: int, resena: str = ""):
+    """Guarda una valoración/review para un menú"""
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO valoraciones (menu_id, usuario_id, puntuacion, resena, fecha_creacion)
+                VALUES (%s, %s, %s, %s, NOW())
+                ON DUPLICATE KEY UPDATE 
+                puntuacion = %s, resena = %s, fecha_creacion = NOW()
+            """, (menu_id, usuario_id, puntuacion, resena, puntuacion, resena))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f"Error guardando rating: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_ratings_by_menu(menu_id: int):
+    """Obtiene todas las valoraciones de un menú con información del usuario"""
+    conn = get_db_connection()
+    ratings = []
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT v.id, u.nombre_usuario, v.puntuacion, v.resena, v.fecha_creacion
+                FROM valoraciones v
+                JOIN usuarios_azca u ON v.usuario_id = u.id
+                WHERE v.menu_id = %s
+                ORDER BY v.fecha_creacion DESC
+            """, (menu_id,))
+            rows = cursor.fetchall()
+            for row in rows:
+                ratings.append({
+                    "id": row[0],
+                    "nombre_usuario": row[1],
+                    "puntuacion": row[2],
+                    "resena": row[3],
+                    "fecha": row[4].isoformat() if row[4] else None
+                })
+    except Exception as e:
+        print(f"Error obteniendo ratings: {e}")
+    finally:
+        conn.close()
+    return ratings
+
+def get_average_rating(menu_id: int):
+    """Calcula el rating promedio de un menú"""
+    conn = get_db_connection()
+    average = 0
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT ROUND(AVG(puntuacion), 1) as promedio, COUNT(*) as total
+                FROM valoraciones
+                WHERE menu_id = %s
+            """, (menu_id,))
+            row = cursor.fetchone()
+            if row and row[0] is not None:
+                average = {"promedio": row[0], "total": row[1]}
+    except Exception as e:
+        print(f"Error calculando rating promedio: {e}")
+    finally:
+        conn.close()
+    return average

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import List, Optional
 from datetime import date
 
@@ -44,6 +44,13 @@ class UsuarioBase(BaseModel):
 class UsuarioCreate(UsuarioBase):
     password: str
 
+    @field_validator('rol')
+    @classmethod
+    def rol_must_be_valid(cls, v):
+        if v not in ['Bar', 'Cliente']:
+            raise ValueError('Rol debe ser "Bar" o "Cliente"')
+        return v
+
 class Usuario(UsuarioBase):
     id: int
 
@@ -53,3 +60,24 @@ class Usuario(UsuarioBase):
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+class RatingCreate(BaseModel):
+    puntuacion: int  # 1-5
+    resena: Optional[str] = ""
+
+    @field_validator('puntuacion')
+    @classmethod
+    def puntuacion_must_be_valid(cls, v):
+        if v < 1 or v > 5:
+            raise ValueError('Puntuación debe estar entre 1 y 5')
+        return v
+
+class Rating(BaseModel):
+    id: int
+    nombre_usuario: str
+    puntuacion: int
+    resena: Optional[str] = None
+    fecha: Optional[str] = None
+
+    class Config:
+        from_attributes = True

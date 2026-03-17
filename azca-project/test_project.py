@@ -22,12 +22,20 @@ def test_database():
         print("✅ Conexión a MySQL exitosa")
         conn.close()
 
-        # Probar login
-        user = verify_user_credentials('taberna@azca.com', 'password123')
-        if user:
-            print(f"✅ Login exitoso: {user['nombre_usuario']} (Rol: {user['rol']})")
-        else:
-            print("❌ Error en login")
+        # Probar login con diferentes usuarios
+        users_to_test = [
+            ('taberna@azca.com', 'password123', 'Bar'),  # Restaurante
+            ('maria@email.com', 'password123', 'Cliente'),  # Cliente
+            ('rincon@azca.com', 'password123', 'Bar')  # Otro restaurante
+        ]
+        
+        for email, password, expected_role in users_to_test:
+            user = verify_user_credentials(email, password)
+            if user and user['rol'] == expected_role:
+                print(f"✅ Login exitoso: {user['nombre_usuario']} (Rol: {user['rol']})")
+            else:
+                print(f"❌ Error en login para {email}")
+                return False
 
         return True
     except Exception as e:
