@@ -5,5 +5,17 @@
         "database": "azca_db",
         "user": "root",
         "password": "1234"
+    },
+    "document_intelligence": {
+        "endpoint": "https://tu-recurso.cognitiveservices.azure.com/",
+        "key": "tu-api-key-aqui",
+        "model_id": "menus",
+        "api_version": "2024-11-30"
+    },
+    "azure_ml": {
+        "endpoint": "https://tu-recurso.eastus.inference.ml.azure.com/score",
+        "api_key": "tu-api-key-ml-aqui",
+        "auth_header": "Authorization",
+        "auth_scheme": "Bearer"
     }
 }

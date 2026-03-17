@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from .models.schemas import MenuAzca, PredictionResponse, UsuarioCreate, Usuario, LoginRequest, RatingCreate
 from .services.db_service import get_menus, save_menu_azca, create_usuario, get_usuario_by_email, get_all_menus, get_menus_by_usuario, verify_user_credentials
 from .services.doc_intel import analyze_menu_image
-from .services.ml_service import predict_dishes_for_date
+from .services.ml_service import predict_dishes_for_date, recommend_dishes_from_menu
 import jwt
 import datetime
 
@@ -88,29 +88,66 @@ async def create_menu(menu: MenuAzca, current_user: dict = Depends(verify_token)
 
 @app.get("/recommend-menu")
 async def recommend_menu(current_user: dict = Depends(verify_token)):
-    """Devuelve una recomendación de platos (según mes/día) usando un modelo de Azure ML."""
+    """Devuelve una recomendación de platos (según mes/día y menú disponible) usando heurísticas y ML."""
     today = datetime.datetime.utcnow()
-
-    error_message = None
+    
     try:
-        recommendation = predict_dishes_for_date(today.month, today.day)
+        # Obtener el menú del usuario (si es restaurante)
+        if current_user['rol'] == 'Bar':
+            menus = get_menus_by_usuario(current_user['id'])
+        else:
+            menus = get_all_menus()
+        
+        # Si hay menús, extraer los platos disponibles
+        primeros = []
+        segundos = []
+        postres = []
+        
+        if menus:
+            for menu in menus:
+                # Convertir MenuAzca a dict si es necesario
+                if hasattr(menu, 'dict'):
+                    menu_dict = menu.dict()
+                else:
+                    menu_dict = menu if isinstance(menu, dict) else {}
+                
+                # Agregar platos a las listas
+                primeros.extend(menu_dict.get('primeros', []) or [])
+                segundos.extend(menu_dict.get('segundos', []) or [])
+                postres.extend(menu_dict.get('postre', []) or [])
+        
+        # Remover duplicados manteniendo orden
+        primeros = list(dict.fromkeys([p for p in primeros if p and str(p).strip()]))
+        segundos = list(dict.fromkeys([s for s in segundos if s and str(s).strip()]))
+        postres = list(dict.fromkeys([p for p in postres if p and str(p).strip()]))
+        
+        # Obtener recomendaciones del modelo de ML
+        recommendation = recommend_dishes_from_menu(
+            primeros=primeros,
+            segundos=segundos,
+            postres=postres,
+            month=today.month,
+            day=today.day
+        )
+        
+        # Agregar información meta
+        recommendation['menus_available'] = len(menus)
+        recommendation['dishes_count'] = {
+            'primeros': len(primeros),
+            'segundos': len(segundos),
+            'postres': len(postres)
+        }
+        
+        return recommendation
+        
     except Exception as e:
-        # No queremos romper el dashboard si la API de ML falla
-        error_message = str(e)
-        print(f"[WARN] Error obteniendo recomendación de ML: {e}")
-        recommendation = []
-
-    # Asegurar que siempre devolvemos algo que el frontend puede mostrar
-    if not recommendation:
-        recommendation = [
-            "Prueba hoy nuestro menú especial",
-            "Actualiza tu menú para ver recomendaciones"
-        ]
-
-    response = {"recommendation": recommendation}
-    if error_message:
-        response["error"] = error_message
-    return response
+        print(f"[ERROR] Error en recommend_menu: {e}")
+        # Devolver al menos algo de información en caso de error
+        return {
+            'error': str(e),
+            'date': f"{today.strftime('%A')}, {today.day}/{today.month}",
+            'message': 'Recomendación no disponible. Por favor intenta más tarde.'
+        }
 
 # Endpoints para ratings/valoraciones
 @app.post("/menus/{menu_id}/ratings")
