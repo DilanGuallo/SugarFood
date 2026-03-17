@@ -44,74 +44,57 @@ def _extract_text_from_layout_response(response_json: dict) -> str:
     return "\n".join(lines)
 
 
-def _parse_menu_text(text: str) -> MenuAzca:
-    """Intenta mapear texto libre a los campos del modelo MenuAzca."""
+def _parse_menu_fields(fields: dict) -> MenuAzca:
+    """Parsea fields extraídos por un modelo custom de Document Intelligence."""
     menu = MenuAzca()
-    lines = [l.strip() for l in text.splitlines() if l.strip()]
 
-    # Bucles simples para intentar capturar cabeceras y secciones.
-    current_section = None
-    sections = {
-        'primeros': [],
-        'segundos': [],
-        'complemento': [],
-        'postre': [],
-        'menu_infantil': []
-    }
+    # Mapear campos conocidos - buscar por contenido en el nombre del field
+    for field_name, value_obj in fields.items():
+        field_lower = field_name.lower()
 
-    for line in lines:
-        low = line.lower()
+        if 'menu' in field_lower and 'dia' in field_lower:
+            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.menu_del_dia = value_obj['valueString']
+        elif 'precio' in field_lower:
+            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.precio = value_obj['valueString']
+        elif 'bar' in field_lower or 'rest' in field_lower:
+            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.bar_rest = value_obj['valueString']
+        elif 'telefono' in field_lower or 'tel' in field_lower:
+            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.telefono = value_obj['valueString']
+        elif 'aperitivo' in field_lower:
+            if isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.aperitivo = value_obj['valueString']
+        elif 'primero' in field_lower or 'primeros' in field_lower:
+            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
+                menu.primeros = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
+            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.primeros = [value_obj['valueString']]
+        elif 'segundo' in field_lower or 'segundos' in field_lower:
+            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
+                menu.segundos = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
+            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.segundos = [value_obj['valueString']]
+        elif 'complemento' in field_lower or 'guarnicion' in field_lower:
+            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
+                menu.complemento = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
+            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.complemento = [value_obj['valueString']]
+        elif 'postre' in field_lower:
+            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
+                menu.postre = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
+            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.postre = [value_obj['valueString']]
+        elif 'infantil' in field_lower or 'nino' in field_lower:
+            if isinstance(value_obj, dict) and 'valueArray' in value_obj:
+                menu.menu_infantil = [item.get('valueString', '') for item in value_obj['valueArray'] if item.get('valueString')]
+            elif isinstance(value_obj, dict) and 'valueString' in value_obj and value_obj['valueString']:
+                menu.menu_infantil = [value_obj['valueString']]
 
-        # Campos generales
-        if not menu.menu_del_dia and 'menú' in low and 'día' in low:
-            menu.menu_del_dia = line
-            continue
-        if not menu.precio and ('precio' in low or '€' in line):
-            menu.precio = line
-            continue
-        if not menu.bar_rest and ('bar' in low or 'rest' in low or 'restaurante' in low):
-            menu.bar_rest = line
-            continue
-        if not menu.telefono and ('tel' in low or 'tlf' in low or 'telefono' in low or 'mobile' in low):
-            menu.telefono = line
-            continue
-        if not menu.aperitivo and 'aperitivo' in low:
-            menu.aperitivo = line
-            continue
-
-        # Secciones de platos
-        if 'primeros' in low:
-            current_section = 'primeros'
-            continue
-        if 'segundos' in low or 'segundo' in low:
-            current_section = 'segundos'
-            continue
-        if 'complemento' in low or 'acompa' in low or 'guarnici' in low:
-            current_section = 'complemento'
-            continue
-        if 'postre' in low:
-            current_section = 'postre'
-            continue
-        if 'infantil' in low or 'niños' in low or 'kids' in low:
-            current_section = 'menu_infantil'
-            continue
-
-        # Si estamos dentro de una sección, intentar agregar platos
-        if current_section:
-            # Saltar líneas que parecen ser títulos u otros datos
-            if any(k in low for k in ['menú', 'precio', 'tel', 'bar', 'rest', 'aperitivo']):
-                continue
-            if len(line) > 2:
-                sections[current_section].append(line)
-
-    menu.primeros = sections['primeros']
-    menu.segundos = sections['segundos']
-    menu.complemento = sections['complemento']
-    menu.postre = sections['postre']
-    menu.menu_infantil = sections['menu_infantil']
-
-    # Guardar texto crudo en platos para facilitar depuración
-    menu.platos = text
+    # Guardar fields crudos para depuración
+    menu.platos = str(fields)
 
     return menu
 
@@ -122,11 +105,12 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
 
     endpoint = cfg.get('endpoint')
     key = cfg.get('key')
+    model_id = cfg.get('model_id', 'prebuilt-document')
     if not endpoint or not key:
-        raise RuntimeError('Falta endpoint o key en backend/config/azure_doc_intel.json')
+        raise RuntimeError('Falta endpoint, key o model_id en backend/config/connections.json')
 
     api_version = cfg.get('api_version', '2023-07-31')
-    url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/prebuilt-read:analyze?api-version={api_version}"
+    url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/{model_id}:analyze?api-version={api_version}"
 
     headers = {
         'Ocp-Apim-Subscription-Key': key,
@@ -160,9 +144,19 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
             status = result_json.get('status')
             
             if status == 'succeeded':
-                # Extraer el texto del resultado
-                text = _extract_text_from_layout_response(result_json.get('analyzeResult', {}))
-                menu = _parse_menu_text(text)
+                # Extraer fields del resultado (para modelos custom)
+                analyze_result = result_json.get('analyzeResult', {})
+                documents = analyze_result.get('documents', [])
+                if documents:
+                    fields = documents[0].get('fields', {})
+                    print(f"DEBUG: Fields extraídos: {fields}")
+                    for field_name, value_obj in fields.items():
+                        print(f"DEBUG: Field {field_name}: {value_obj}")
+                    menu = _parse_menu_fields(fields)
+                else:
+                    key_value_pairs = analyze_result.get('keyValuePairs', [])
+                    print(f"DEBUG: Key-value pairs extraídos: {key_value_pairs}")
+                    menu = _parse_menu_key_value_pairs(key_value_pairs)
                 return menu
             if status == 'failed':
                 error_details = result_json.get('error', {}).get('message', 'Error desconocido')
