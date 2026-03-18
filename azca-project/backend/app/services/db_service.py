@@ -231,7 +231,8 @@ def save_rating(menu_id: int, usuario_id: int, puntuacion: int, resena: str = ""
             return True
     except Exception as e:
         print(f"Error guardando rating: {e}")
-        return False
+        conn.rollback()
+        raise
     finally:
         conn.close()
 

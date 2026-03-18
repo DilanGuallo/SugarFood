@@ -76,6 +76,16 @@ def _get_day_recommendations(month: int, day: int, weekday: str) -> Dict[str, An
     })
 
 
+def _build_default_recommendations() -> Dict[str, Any]:
+    """Devuelve recomendaciones por defecto cuando no hay platos disponibles."""
+    return {
+        'first_course': 'Ensalada mixta de la casa',
+        'main_course': 'Pollo asado con patatas',
+        'dessert': 'Flan casero',
+        'reasoning': ['Sugerencia por defecto mientras se carga la recomendacion del dia']
+    }
+
+
 def recommend_dishes_from_menu(
     primeros: Optional[List[str]] = None,
     segundos: Optional[List[str]] = None,
@@ -94,7 +104,7 @@ def recommend_dishes_from_menu(
     
     # Obtener información del día
     try:
-        current_date = datetime.date(2024, month, day)
+        current_date = datetime.date(datetime.datetime.utcnow().year, month, day)
         weekday_num = current_date.weekday()  # 0=Monday, 6=Sunday
         weekday_name = current_date.strftime('%A')
     except ValueError:
@@ -140,6 +150,8 @@ def recommend_dishes_from_menu(
     suggestions = _get_heuristic_recommendations(
         weekday_num, primeros, segundos, postres, day_info
     )
+    if not any([suggestions.get('first_course'), suggestions.get('main_course'), suggestions.get('dessert')]):
+        suggestions = _build_default_recommendations()
     recommendations['recommended_dishes'] = suggestions
     recommendations['ml_used'] = False
     
@@ -258,6 +270,13 @@ def predict_dishes_for_date(
         if response.ok:
             result = response.json()
             print(f"[INFO] Azure ML respondió: {result}")
+            if isinstance(result, dict):
+                if 'recommended_dishes' in result and isinstance(result['recommended_dishes'], dict):
+                    return result['recommended_dishes']
+                if 'recommendation' in result:
+                    return result['recommendation']
+                if any(key in result for key in ['first_course', 'main_course', 'dessert']):
+                    return result
             return result
         else:
             print(f"[WARN] Azure ML error: {response.status_code} {response.text}")

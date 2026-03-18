@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date
 
@@ -21,11 +21,11 @@ class MenuAzca(BaseModel):
     fecha: Optional[date] = None
     telefono: Optional[str] = None
     aperitivo: Optional[str] = None
-    primeros: Optional[List[str]] = []
-    segundos: Optional[List[str]] = []
-    complemento: Optional[List[str]] = []
-    postre: Optional[List[str]] = []
-    menu_infantil: Optional[List[str]] = []
+    primeros: List[str] = Field(default_factory=list)
+    segundos: List[str] = Field(default_factory=list)
+    complemento: List[str] = Field(default_factory=list)
+    postre: List[str] = Field(default_factory=list)
+    menu_infantil: List[str] = Field(default_factory=list)
 
 class PredictionRequest(BaseModel):
     image_url: str

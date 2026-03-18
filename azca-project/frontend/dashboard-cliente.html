@@ -465,6 +465,20 @@
                 card.className = 'restaurant-card';
                 card.href = `restaurante.html?id=${menu.id || index}`;
 
+                const menuPrice = normalizePrice(menu.precio);
+                const menuType = detectMenuType(menu);
+                const searchableText = [
+                    menu.bar_rest || '',
+                    ...(menu.primeros || []),
+                    ...(menu.segundos || []),
+                    ...(menu.complemento || []),
+                    ...(menu.postre || [])
+                ].join(' ').toLowerCase();
+
+                card.dataset.price = menuPrice ? String(menuPrice) : '';
+                card.dataset.type = menuType;
+                card.dataset.search = searchableText;
+
                 const images = [
                     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
                     'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
@@ -508,6 +522,43 @@
                 return dishes[Math.floor(Math.random() * dishes.length)];
             }
 
+            function normalizePrice(priceText) {
+                if (!priceText) return null;
+                const normalized = String(priceText).replace(',', '.').replace(/[^\d.]/g, '');
+                const parsed = parseFloat(normalized);
+                return Number.isFinite(parsed) ? parsed : null;
+            }
+
+            function detectMenuType(menu) {
+                const combinedText = [
+                    ...(menu.primeros || []),
+                    ...(menu.segundos || []),
+                    ...(menu.complemento || []),
+                    ...(menu.postre || []),
+                    menu.bar_rest || '',
+                    menu.platos || ''
+                ].join(' ').toLowerCase();
+
+                const vegetarianKeywords = [
+                    'vegetar', 'ensalada', 'verdura', 'verduras', 'hummus',
+                    'falafel', 'tofu', 'risotto', 'setas', 'gazpacho'
+                ];
+                const italianKeywords = [
+                    'ital', 'pizza', 'pasta', 'risotto', 'ravioli',
+                    'lasaña', 'lasagna', 'carpaccio', 'burrata', 'osobuco'
+                ];
+
+                if (italianKeywords.some(keyword => combinedText.includes(keyword))) {
+                    return 'italiano';
+                }
+
+                if (vegetarianKeywords.some(keyword => combinedText.includes(keyword))) {
+                    return 'vegetariano';
+                }
+
+                return 'tradicional';
+            }
+
             function displaySampleRestaurants() {
                 const sampleMenus = [
                     {
@@ -534,27 +585,26 @@
             }
 
             function filterRestaurants() {
-                const searchTerm = searchInput.value.toLowerCase();
+                const searchTerm = searchInput.value.toLowerCase().trim();
                 const priceFilterValue = priceFilter.value;
                 const typeFilterValue = typeFilter.value;
 
                 const cards = document.querySelectorAll('.restaurant-card');
 
                 cards.forEach(card => {
-                    const restaurantName = card.querySelector('h3').textContent.toLowerCase();
-                    const description = card.querySelector('.description').textContent.toLowerCase();
-                    const price = card.querySelector('.price-tag').textContent;
+                    const searchableText = card.dataset.search || '';
+                    const cardType = card.dataset.type || '';
+                    const priceNum = parseFloat(card.dataset.price);
 
                     let showCard = true;
 
                     // Filtro de búsqueda
-                    if (searchTerm && !restaurantName.includes(searchTerm) && !description.includes(searchTerm)) {
+                    if (searchTerm && !searchableText.includes(searchTerm)) {
                         showCard = false;
                     }
 
                     // Filtro de precio
-                    if (priceFilterValue) {
-                        const priceNum = parseFloat(price.replace('€', ''));
+                    if (priceFilterValue && Number.isFinite(priceNum)) {
                         switch (priceFilterValue) {
                             case 'low':
                                 if (priceNum >= 12) showCard = false;
@@ -566,15 +616,13 @@
                                 if (priceNum <= 15) showCard = false;
                                 break;
                         }
+                    } else if (priceFilterValue && !Number.isFinite(priceNum)) {
+                        showCard = false;
                     }
 
-                    // Filtro de tipo (simulado)
-                    if (typeFilterValue) {
-                        // Aquí iría la lógica real de filtrado por tipo de comida
-                        // Por ahora, solo filtramos algunos restaurantes como vegetarianos
-                        if (typeFilterValue === 'vegetariano' && !restaurantName.toLowerCase().includes('café')) {
-                            showCard = false;
-                        }
+                    // Filtro de tipo
+                    if (typeFilterValue && cardType !== typeFilterValue) {
+                        showCard = false;
                     }
 
                     card.style.display = showCard ? 'block' : 'none';

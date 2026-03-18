@@ -25,6 +25,16 @@ def _load_config() -> dict:
         ) from e
 
 
+def _build_analyze_url(endpoint: str, model_id: str, api_version: str) -> str:
+    """Construye la URL de análisis según la versión del API."""
+    normalized_endpoint = endpoint.rstrip('/')
+    base_path = 'documentintelligence' if api_version >= '2024-11-30' else 'formrecognizer'
+    return (
+        f"{normalized_endpoint}/{base_path}/documentModels/"
+        f"{model_id}:analyze?api-version={api_version}"
+    )
+
+
 def _extract_text_from_layout_response(response_json: dict) -> str:
     """Extrae todo el texto reconocido por el modelo de layout."""
     # El servicio incluye el texto en response_json.get("content") para muchos formatos.
@@ -42,6 +52,96 @@ def _extract_text_from_layout_response(response_json: dict) -> str:
                 lines.append(text)
 
     return "\n".join(lines)
+
+
+def _extract_nested_value_v2(item: dict) -> str | None:
+    """Extrae texto de estructuras anidadas de Document Intelligence."""
+    if not isinstance(item, dict):
+        return None
+
+    value_string = item.get('valueString')
+    if isinstance(value_string, str) and value_string.strip():
+        return value_string.strip()
+
+    content = item.get('content')
+    if isinstance(content, str) and content.strip():
+        return content.strip()
+
+    value_object = item.get('valueObject')
+    if isinstance(value_object, dict):
+        nested_values = []
+        for nested in value_object.values():
+            nested_value = _extract_nested_value_v2(nested)
+            if nested_value:
+                nested_values.append(nested_value)
+        if nested_values:
+            return " ".join(nested_values).strip()
+
+    return None
+
+
+def _dedupe_preserve_order_v2(values: List[str]) -> List[str]:
+    """Elimina duplicados y valores vacios manteniendo el orden."""
+    unique_values: List[str] = []
+    seen = set()
+
+    for value in values:
+        normalized = value.strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        unique_values.append(normalized)
+
+    return unique_values
+
+
+def _extract_field_value_v2(field_obj: dict) -> str | list:
+    """Extrae el valor de un field del modelo custom, manejando strings, arrays y objetos."""
+    if not isinstance(field_obj, dict):
+        return None
+
+    if 'valueArray' in field_obj:
+        array = field_obj['valueArray']
+        if isinstance(array, list):
+            values = []
+            for item in array:
+                extracted = _extract_nested_value_v2(item)
+                if extracted:
+                    values.append(extracted)
+            values = _dedupe_preserve_order_v2(values)
+            return values if values else None
+
+    return _extract_nested_value_v2(field_obj)
+
+
+def _apply_menu_fallbacks_v2(menu: MenuAzca) -> MenuAzca:
+    """Completa campos derivados para no dejar el menu sin platos visibles."""
+    menu.primeros = _dedupe_preserve_order_v2(menu.primeros or [])
+    menu.segundos = _dedupe_preserve_order_v2(menu.segundos or [])
+    menu.complemento = _dedupe_preserve_order_v2(menu.complemento or [])
+    menu.postre = _dedupe_preserve_order_v2(menu.postre or [])
+    menu.menu_infantil = _dedupe_preserve_order_v2(menu.menu_infantil or [])
+
+    if not menu.platos:
+        parts = []
+        if menu.primeros:
+            parts.append("Primeros: " + ", ".join(menu.primeros[:3]))
+        if menu.segundos:
+            parts.append("Segundos: " + ", ".join(menu.segundos[:3]))
+        if menu.postre:
+            parts.append("Postres: " + ", ".join(menu.postre[:2]))
+        menu.platos = " | ".join(parts) if parts else "Menu del dia"
+
+    if not menu.primeros and menu.platos:
+        menu.primeros = [menu.platos]
+
+    if not menu.segundos and menu.complemento:
+        menu.segundos = menu.complemento[:2]
+
+    if not menu.segundos and menu.postre:
+        menu.segundos = ["Segundo por confirmar"]
+
+    return menu
 
 
 def _extract_field_value(field_obj: dict) -> str | list:
@@ -80,7 +180,7 @@ def _parse_menu_fields(fields: dict) -> MenuAzca:
             continue
         
         field_lower = field_name.lower()
-        extracted_value = _extract_field_value(value_obj)
+        extracted_value = _extract_field_value_v2(value_obj)
         
         # Si no hay valor extraído, saltar
         if not extracted_value:
@@ -115,7 +215,7 @@ def _parse_menu_fields(fields: dict) -> MenuAzca:
         elif field_lower == 'platos':
             menu.platos = extracted_value
 
-    return menu
+    return _apply_menu_fallbacks_v2(menu)
 
 
 def _parse_menu_key_value_pairs(key_value_pairs: list) -> MenuAzca:
@@ -146,7 +246,7 @@ def analyze_menu_image(file_bytes: bytes, content_type: str) -> MenuAzca:
         raise RuntimeError('Falta endpoint, key o model_id en backend/config/connections.json')
 
     api_version = cfg.get('api_version', '2024-11-30')
-    url = f"{endpoint.rstrip('/')}/formrecognizer/documentModels/{model_id}:analyze?api-version={api_version}"
+    url = _build_analyze_url(endpoint, model_id, api_version)
 
     headers = {
         'Ocp-Apim-Subscription-Key': key,
